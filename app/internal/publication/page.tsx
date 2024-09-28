@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { WorkArea } from '@prisma/client'
-import WorkAreaDetailsDialog from '@/components/dialogs/WorkAreaDetailsDialog'
+import dynamic from 'next/dynamic'
+
+const WorkAreaDetailsDialog = dynamic(() => import('@/components/dialogs/WorkAreaDetailsDialog'), { ssr: false })
 
 export default function PublishPage() {
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])

@@ -5,7 +5,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CalendarDays, AlertTriangle, Plus } from 'lucide-react'
 import { PrismaClient } from '@prisma/client'
 import { format } from 'date-fns'
-import { NextRequest } from 'next/server'
 import { getDecodedToken } from '@/lib/utils/auth'
 
 export default async function Home() {

@@ -6,6 +6,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import 'leaflet/dist/leaflet.css'
 import React from 'react'
 import WorkAreaEntryMap from '../maps/WorkAreaEntryMap'
+import L from 'leaflet' // Import Leaflet directly
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png' // Import marker icons
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 interface WorkAreaDetailsDialogProps {
   workArea: WorkArea
@@ -15,12 +19,11 @@ interface WorkAreaDetailsDialogProps {
 export default function WorkAreaDetailsDialog({ workArea, onClose }: WorkAreaDetailsDialogProps) {
   useEffect(() => {
     // This is a workaround for a known issue with Leaflet in React
-    const L = require('leaflet')
     delete L.Icon.Default.prototype._getIconUrl
     L.Icon.Default.mergeOptions({
-      iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-      iconUrl: require('leaflet/dist/images/marker-icon.png'),
-      shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+      iconRetinaUrl: markerIcon2x,
+      iconUrl: markerIcon,
+      shadowUrl: markerShadow,
     })
   }, [])
 
@@ -58,17 +61,3 @@ export default function WorkAreaDetailsDialog({ workArea, onClose }: WorkAreaDet
     </Dialog>
   )
 }
-/*
-
-            <MapContainer
-              center={[0, 0]}
-              zoom={13}
-              style={{ height: '100%', width: '100%' }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              <GeoJSON data={JSON.parse(workArea.area as string)} />
-            </MapContainer>
-            */

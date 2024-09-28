@@ -32,6 +32,6 @@ export async function generatePDFForAreas(selectedAreaIds: number[]) {
 export async function sendPDFByEmail(email: string, selectedAreaIds: number[]) {
   // In a real application, you would generate a PDF and send it via email
   // For this example, we'll just return a success message
-  console.log('Sending PDF to email:', email)
+  console.log('Sending PDF to email:', email, selectedAreaIds)
   return { success: true, message: 'PDF sent successfully' }
 }
