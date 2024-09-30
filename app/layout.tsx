@@ -4,7 +4,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 import prisma from "@/lib/prisma";
 import { createAdminUser } from "@/zscript_create_user";
-import Head from 'next/head';
+import type { Viewport } from 'next'
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -15,10 +16,25 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+ 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+}
 
 export const metadata: Metadata = {
-  title: 'WorkManager - Saxony State Forest Service',
+  title: 'WorkManager',
   description: 'Platform for forest workers to manage and communicate work activities',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    minimumScale: 1,
+    userScalable: false,
+  },
 }
 
 export default async function RootLayout({
@@ -40,9 +56,6 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      </Head>
       <Providers>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
