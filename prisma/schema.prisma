@@ -129,3 +129,14 @@ model WorkAreaChangeLog {
   newValues      Json
   createdAt      DateTime   @default(now())
 }
+
+model PdfTemplate {
+  id        Int      @id @default(autoincrement())
+  name      String
+  description String
+  basePdf String
+  schemas String
+  neededFields String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

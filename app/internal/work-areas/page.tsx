@@ -24,11 +24,15 @@ const WorkAreasPage = async () => {
     ), [])
 
     const token = await getDecodedToken()
+    console.log(token)
+    console.log(token.user.id)
     const workAreas = await prisma.workArea.findMany({
         where: {
             createdById: token.user.id
         }
     });
+
+    console.log(workAreas)
 
     return (
         <div className="container mx-auto p-4">

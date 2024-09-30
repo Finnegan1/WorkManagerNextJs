@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { fetchWorkAreas, generatePDFForAreas, sendPDFByEmail } from './actions'
+import { fetchWorkAreas, generatePDF, sendPDFByEmail } from './actions'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { WorkArea } from '@prisma/client'
+import { PdfTemplate, WorkArea } from '@prisma/client'
 import dynamic from 'next/dynamic'
+import TemplatePickDialog from '@/components/dialogs/TemplatePickDialog'
 
 const WorkAreaDetailsDialog = dynamic(() => import('@/components/dialogs/WorkAreaDetailsDialog'), { ssr: false })
 
@@ -18,6 +19,7 @@ export default function PublishPage() {
   const [selectedAreas, setSelectedAreas] = useState<number[]>([])
   const [detailsWorkArea, setDetailsWorkArea] = useState<WorkArea | null>(null)
   const [email, setEmail] = useState('')
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
 
   const handleFetchAreas = async () => {
     if (startDate && endDate) {
@@ -33,11 +35,13 @@ export default function PublishPage() {
     )
   }
 
-  const handleGeneratePDF = async () => {
-    const result = await generatePDFForAreas(selectedAreas)
-    if (result.success && result.pdfData) {
+  const handleGeneratePDF = async (template: PdfTemplate) => {
+    try {
+      const selectedWorkAreas = workAreas.filter(area => selectedAreas.includes(area.id));
+      const pdfData = await generatePDF(selectedWorkAreas, template);
+      
       // Convert base64 to Blob
-      const byteCharacters = atob(result.pdfData);
+      const byteCharacters = atob(pdfData);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -52,8 +56,9 @@ export default function PublishPage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } else {
-      alert(result.message || 'Failed to generate PDF');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF: ' + (error as Error).message);
     }
   }
 
@@ -118,7 +123,7 @@ export default function PublishPage() {
         </Table>
       </div>
       <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-        <Button onClick={handleGeneratePDF} className="w-full">Generate and Download PDF</Button>
+        <Button onClick={() => setIsTemplateDialogOpen(true)} className="w-full">Generate and Download PDF</Button>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Input
             type="email"
@@ -130,6 +135,14 @@ export default function PublishPage() {
         </div>
       </div>
       {detailsWorkArea && <WorkAreaDetailsDialog workArea={detailsWorkArea} onClose={() => setDetailsWorkArea(null)} />}
+      {
+        isTemplateDialogOpen && 
+          <TemplatePickDialog 
+            handleSelectTemplate={(template: PdfTemplate) => {handleGeneratePDF(template)}} 
+            isOpen={isTemplateDialogOpen} 
+            setIsOpen={setIsTemplateDialogOpen} 
+          />
+      }
     </div>
   )
 }

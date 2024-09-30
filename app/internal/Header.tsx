@@ -20,7 +20,22 @@ const navigationStructure = [
   { name: 'Übersicht', href: '/internal' },
   { name: 'Mein Profil', href: '/internal/profil' },
   { name: 'Nutzer Administrieren', href: '/internal/admin/users' },
-  { name: 'Veröffentlichung', href: '/internal/publication' },
+  { 
+    name: 'Veröffentlichung',
+    href: '/internal/publication',
+    children: [
+      {
+        name: 'Veröffentlichung',
+        href: '/internal/publication',
+        description: 'Veröffentlichung erstellen'
+      },
+      {
+        name: 'Templates',
+        href: '/internal/publication/templates',
+        description: 'Veröffentlichungstemplates anzeigen und verwalten'
+      }
+    ]
+  },
   {
     name: 'Meine Arbeitsbereiche',
     href: '/internal/work-areas',

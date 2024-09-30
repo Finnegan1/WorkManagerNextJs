@@ -1,39 +1,8 @@
-import { WorkArea } from "@prisma/client";
+import { WorkArea, PdfTemplate } from "@prisma/client";
+import { generate } from '@pdfme/generator';
+import { Template } from '@pdfme/common';
+import { barcodes, ellipse, line, multiVariableText, rectangle, svg, table, image } from '@pdfme/schemas'
 import puppeteer from 'puppeteer';
-import fs from 'fs';
-import path from 'path';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-
-// Add custom fonts
-const addFonts = (doc: jsPDF) => {
-  // Use relative paths and check if files exist
-  const fontPaths = [
-    path.join(process.cwd(), 'assets', 'fonts', 'OpenSans', 'OpenSans-Regular.ttf'),
-    path.join(process.cwd(), 'assets', 'fonts', 'OpenSans', 'OpenSans-Bold.ttf')
-  ];
-
-  fontPaths.forEach((fontPath, index) => {
-    if (fs.existsSync(fontPath)) {
-      const fontData = fs.readFileSync(fontPath);
-      doc.addFileToVFS(fontPath, fontData.toString('base64'));
-      doc.addFont(fontPath, 'OpenSans', index === 0 ? 'normal' : 'bold');
-    } else {
-      console.warn(`Font file not found: ${fontPath}`);
-    }
-  });
-};
-
-// Load and add logo
-const addLogo = (doc: jsPDF) => {
-  const logoPath = path.join(process.cwd(), 'assets', 'images', 'logo.png');
-  if (fs.existsSync(logoPath)) {
-    const logoData = fs.readFileSync(logoPath);
-    doc.addImage(logoData, 'PNG', 10, 10, 50, 20);
-  } else {
-    console.warn('Logo file not found:', logoPath);
-  }
-};
 
 export async function generateAreaImage(workArea: WorkArea) {
   const browser = await puppeteer.launch({
@@ -112,79 +81,79 @@ export async function generateAreaImage(workArea: WorkArea) {
   return imageBuffer;
 }
 
-export async function generatePDF(workAreas: WorkArea[]) {
+
+export async function generatePDF(workAreas: WorkArea[], template: PdfTemplate) {
   try {
-    const doc = new jsPDF();
-    addFonts(doc);
-    
-    for (const [index, area] of workAreas.entries()) {
-      if (index > 0) doc.addPage();
-      
-      // Add logo and title
-      addLogo(doc);
-      
-      // Add area name
-      doc.setFontSize(18);
-      doc.setTextColor(0, 0, 0);
-      doc.text(area.name, 20, 50);
-      
-      // Add information
-      doc.setFont('OpenSans', 'normal');
-      doc.setFontSize(12);
-      let yPos = 70;
-      
-      doc.text(`Type: ${area.type}`, 20, yPos);
-      yPos += 10;
-      
-      doc.text(`Restriction Level: ${area.restrictionLevel}`, 20, yPos);
-      yPos += 10;
-      
-      doc.text(`Start Time: ${area.startTime.toLocaleString()}`, 20, yPos);
-      yPos += 10;
-      doc.text(`End Time: ${area.endTime.toLocaleString()}`, 20, yPos);
-      yPos += 10;
-      
-      if (area.description) {
-        doc.setFont('OpenSans', 'bold');
-        doc.text('Description:', 20, yPos);
-        yPos += 10;
-        doc.setFont('OpenSans', 'normal');
-        doc.text(area.description, 20, yPos, { maxWidth: 170 });
-        yPos += 20;
-      }
-      
-      if (area.rerouting) {
-        doc.setFont('OpenSans', 'bold');
-        doc.text('Rerouting Information:', 20, yPos);
-        yPos += 10;
-        doc.setFont('OpenSans', 'normal');
-        doc.text(area.rerouting, 20, yPos, { maxWidth: 170 });
-        yPos += 20;
-      }
-      
-      // Add map image
-      try {
-        const mapImage = await generateAreaImage(area);
-        doc.addImage(mapImage, 'JPEG', 20, yPos, 170, 100);
-        yPos += 110;
-      } catch (error) {
-        console.error('Error generating map image:', error);
-        doc.text('Error: Unable to generate map image', 20, yPos);
-      }
-      
-      // Add footer
-      doc.setFont('OpenSans', 'normal');
-      doc.setFontSize(8);
-      doc.text('For more information, please visit www.finnegan.dev', 20, 285);
-      doc.text(`Generated on ${new Date().toLocaleString()}`, 150, 285);
+    let pdfTemplate: Template;
+    try {
+      pdfTemplate = {
+        basePdf: template.basePdf,
+        schemas: JSON.parse(template.schemas),
+      };
+    } catch (parseError) {
+      console.error('Error parsing template:', parseError);
+      throw new Error('Invalid template format: Unable to parse JSON');
     }
 
-    const pdfData = doc.output('arraybuffer');
-    console.log('PDF generated, size:', pdfData.byteLength, 'bytes');
+    if (workAreas.length === 0) {
+      throw new Error('No work areas provided for PDF generation');
+    }
 
-    return Buffer.from(pdfData).toString('base64');
+    const multiVariableTextInputs: string[] = [];
+    let imageInput: string = '';
+
+    pdfTemplate.schemas.forEach(schema => {
+      schema.forEach(field => {
+        if(field.type === 'multiVariableText') {
+          multiVariableTextInputs.push(field.name)
+        }
+        if(field.type === 'image') {
+          imageInput = field.name
+        }
+      })
+    })
+
+    console.log('multiVariableTextInputs', multiVariableTextInputs)
+
+    const inputData = await Promise.all(workAreas.map(async area => {
+      const obj: { [key: string]: any } = {};
+      multiVariableTextInputs.forEach(input => {
+        obj[input] = JSON.stringify({
+          name: area.name,
+          typ: area.type,
+          beschreibung: area.description,
+          restriktion: area.restrictionLevel,
+          start: area.startTime.toLocaleString(),
+          ende: area.endTime.toLocaleString(),
+          umleitung: area.rerouting,
+        });
+      });
+      obj[imageInput] = await generateAreaImage(area);
+      return obj;
+    }));
+
+    console.log('Input data for PDF generation:', inputData);
+
+    const pdf = await generate({
+      template: pdfTemplate,
+      inputs: inputData,
+      plugins: {
+        image,
+        svg,
+        qrcode: barcodes.qrcode,
+        multiVariableText,
+        line,
+        rectangle,
+        ellipse,
+        table
+      },
+    });
+
+    console.log('PDF generated, size:', pdf.byteLength, 'bytes');
+
+    return Buffer.from(pdf).toString('base64');
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw new Error('Failed to generate PDF');
+    throw new Error('Failed to generate PDF: ' + (error as Error).message);
   }
 }
