@@ -26,7 +26,7 @@ export default function Page() {
         const template = await createTemplate({
             name: 'New Template',
             description: 'New Template Description',
-            schemas: JSON.stringify([]),
+            schemas: [],
             basePdf: BLANK_PDF,
             neededFields: [],
         })

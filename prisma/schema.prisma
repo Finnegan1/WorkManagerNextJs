@@ -135,7 +135,7 @@ model PdfTemplate {
   name      String
   description String
   basePdf String
-  schemas String
+  schemas Json[]
   neededFields String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

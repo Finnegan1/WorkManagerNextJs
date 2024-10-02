@@ -2,24 +2,26 @@
 
 import prisma from '@/lib/prisma';
 import { PdfTemplate } from '@prisma/client';
+import { JsonArray } from '@prisma/client/runtime/library';
 
 export type TemplateCreate = {
     name: string;
     description: string;
     basePdf: string;
-    schemas: string;
+    schemas: JsonArray;
     neededFields: string[];
 }
 
 // Create a new template
 export async function createTemplate(template: TemplateCreate): Promise<PdfTemplate> {
     try {
+        const schemas = template.schemas as any[]
         const newTemplate = await prisma.pdfTemplate.create({
             data: {
                 name: template.name,
                 description: template.description,
                 basePdf: template.basePdf,
-                schemas: JSON.stringify(template.schemas),
+                schemas: schemas,
                 neededFields: template.neededFields,
             },
         });
@@ -59,13 +61,14 @@ export async function getTemplate(id: number): Promise<PdfTemplate> {
 // Update a template
 export async function updateTemplate(id: number, template: TemplateCreate): Promise<PdfTemplate> {
     try {
+        const schemas = template.schemas as any[]
         const updatedTemplate = await prisma.pdfTemplate.update({
             where: { id },
             data: {
                 name: template.name,
                 description: template.description,
                 basePdf: template.basePdf,
-                schemas: template.schemas,
+                schemas: schemas,
                 neededFields: template.neededFields,
             },
         });

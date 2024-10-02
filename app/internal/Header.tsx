@@ -60,7 +60,7 @@ export default function Header() {
 
   const toggleMenu = () => setIsOpen(!isOpen)
 
-  if(!pathname){
+  if (!pathname) {
     return <Skeleton className="h-10 w-full" />
   }
 
@@ -71,7 +71,7 @@ export default function Header() {
     return pathname.startsWith(href + '/')
   }
 
-  const navItemStyles = "bg-green-700 text-white hover:bg-green-600 hover:text-white focus:bg-green-600 focus:text-white data-[state=open]:bg-green-600 data-[state=open]:text-white text-base" // Added text-base for 16px font size
+  const navItemStyles = "bg-green-700 text-white hover:bg-green-600 hover:text-white focus:bg-green-600 focus:text-white data-[state=open]:bg-green-600 data-[state=open]:text-white text-base"
 
   const renderNavigationItems = (items: typeof navigationStructure, isMobile = false) => {
     return items.map((item) => (
@@ -105,19 +105,21 @@ export default function Header() {
             </NavigationMenuContent>
           </>
         ) : (
-          <Link href={item.href} legacyBehavior passHref>
-            <NavigationMenuLink 
-              className={cn(
-                navItemStyles,
-                "flex items-center justify-start px-4 py-2 rounded-md",
-                isActive(item.href) && "bg-green-600",
-                isMobile && "w-full"
-              )}
-              onClick={isMobile ? toggleMenu : undefined}
-            >
-              {item.name}
-            </NavigationMenuLink>
-          </Link>
+          <NavigationMenuLink asChild>
+            <Link href={item.href} passHref>
+              <div
+                className={cn(
+                  navItemStyles,
+                  "flex items-center justify-start px-4 py-2 rounded-md",
+                  isActive(item.href) && "bg-green-600",
+                  isMobile && "w-full"
+                )}
+                onClick={isMobile ? toggleMenu : undefined}
+              >
+                {item.name}
+              </div>
+            </Link>
+          </NavigationMenuLink>
         )}
       </NavigationMenuItem>
     ))
@@ -167,23 +169,21 @@ const ListItem = React.forwardRef<
 >(({ className, title, children, href, ...props }, ref) => {
   return (
     <li>
-      <NavigationMenuLink asChild>
-        <Link href={href} passHref legacyBehavior>
-          <a
-            ref={ref}
-            className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-green-100 hover:text-green-700 focus:bg-green-100 focus:text-green-700",
-              className
-            )}
-            {...props}
-          >
-            <div className="text-base font-medium leading-none">{title}</div>
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-              {children}
-            </p>
-          </a>
-        </Link>
-      </NavigationMenuLink>
+      <Link href={href} passHref legacyBehavior>
+        <a
+          ref={ref as React.LegacyRef<HTMLAnchorElement>}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-green-100 hover:text-green-700 focus:bg-green-100 focus:text-green-700",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-base font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </Link>
     </li>
   )
 })

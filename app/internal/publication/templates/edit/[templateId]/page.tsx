@@ -52,24 +52,27 @@ export default function CreateTemplatePage({ params }: { params: { templateId: s
   }
 
   useEffect(() => {
+    console.log('designer.current', designer.current)
     if (designer.current) {
+      console.log('template', template)
+      console.log('template.schemas', template?.schemas)
       designer.current.updateTemplate({
         basePdf: template?.basePdf || '',
-        schemas: template ? JSON.parse(template.schemas) : [], // Cast to unknown first
+        schemas: template?.schemas as any[] || [],
       })
     }
-  }, [template])
+  }, [template, designer, designer.current])
 
-  const saveTemplate = () => {
+  const saveTemplate = async () => {
     console.log('template', template)
     console.log('template.schemas', template?.schemas)
-    updateTemplate(
+    await updateTemplate(
       Number(templateId),
       {
         name: template?.name || '',
         description: template?.description || '',
         basePdf: template?.basePdf || '',
-        schemas: JSON.stringify(designer.current?.getTemplate().schemas), // Cast to unknown first
+        schemas: designer.current?.getTemplate().schemas as any[] || [],
         neededFields: template?.neededFields || [],
       }
     )
@@ -78,12 +81,8 @@ export default function CreateTemplatePage({ params }: { params: { templateId: s
   }
 
   useEffect(() => {
+    console.log('designerRef.current', designerRef.current)
     if (designerRef.current && template?.basePdf) {
-      console.log('Creating designer', template)
-      console.log('template.schemas', {
-        basePdf: template.basePdf,
-        schemas: template.schemas,
-      })
       designer.current = new Designer({
         domContainer: designerRef.current,
         plugins: {
@@ -98,7 +97,7 @@ export default function CreateTemplatePage({ params }: { params: { templateId: s
         },
         template: {
           basePdf: template.basePdf,
-          schemas: JSON.parse(template.schemas),
+          schemas: designer.current?.getTemplate().schemas as any[] || template.schemas || [],
         },
       })
       designer.current.onSaveTemplate(saveTemplate)

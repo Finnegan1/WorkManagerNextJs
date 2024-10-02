@@ -113,7 +113,7 @@ export async function generatePDF(workAreas: WorkArea[], template: PdfTemplate) 
     try {
       pdfTemplate = {
         basePdf: template.basePdf,
-        schemas: JSON.parse(template.schemas),
+        schemas: template.schemas as any[],
       };
     } catch (parseError) {
       console.error('Error parsing template:', parseError);
