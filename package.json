@@ -50,7 +50,6 @@
     "react-leaflet": "^4.2.1",
     "react-leaflet-draw": "^0.20.4",
     "react-query": "^3.39.3",
-    "sharp": "^0.33.5",
     "staticmaps": "^1.13.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"

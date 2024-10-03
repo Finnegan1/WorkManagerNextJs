@@ -5,8 +5,10 @@ import { WorkArea, PdfTemplate } from "@prisma/client";
 import { generate } from '@pdfme/generator';
 import { Template } from '@pdfme/common';
 import { barcodes, ellipse, line, multiVariableText, rectangle, svg, table, image } from '@pdfme/schemas'
-import puppeteer from 'puppeteer';
-import sharp from 'sharp';
+import StaticMaps from 'staticmaps';
+
+
+
 export async function fetchWorkAreas(startDate: Date, endDate: Date) {
   return prisma.workArea.findMany({
     where: {
@@ -23,87 +25,38 @@ export async function sendPDFByEmail(email: string, selectedAreaIds: number[]) {
   return { success: true, message: 'PDF sent successfully' }
 }
 
-
 export async function generateAreaImage(workArea: WorkArea) {
-  const browser = await puppeteer.launch({
-    headless: true,
-  });
 
-  const page = await browser.newPage();
+  try {
+    const mapOptions = {
+      width: 800,
+      height: 600,
+      paddingX: 10,
+      paddingY: 10,
+      tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    };
 
-  // Increase viewport size for higher resolution
-  await page.setViewport({
-    width: 1920, // Increase width
-    height: 1080, // Increase height
-    deviceScaleFactor: 4, // Further increase pixel density
-  });
+    const map = new StaticMaps(mapOptions);
+    const geojson = JSON.parse(workArea.area as string);
 
-  const geojson = JSON.parse(workArea.area as string);
+    const line = {
+      coords: geojson.geometry.coordinates[0],
+      color: '#0000FFBB',
+      width: 3,
+    };
 
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-      <style>
-        #map { height: 1080px; width: 1920px; }
-        .leaflet-control-zoom { display: none; }
-      </style>
-    </head>
-    <body>
-      <div id="map"></div>
-      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-      <script>
-        const map = L.map('map', { zoomControl: false }).setView([51.505, -0.09], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-        }).addTo(map);
+    map.addPolygon(line);
+    await map.render();
+    const buffer = await map.image.buffer('image/jpeg', { quality: 75 });
 
-        const geojsonData = ${JSON.stringify(geojson)};
-        const geoJsonLayer = L.geoJSON(geojsonData).addTo(map);
-        
-        const bounds = geoJsonLayer.getBounds();
-        const areaSize = Math.abs(bounds.getNorth() - bounds.getSouth()) * Math.abs(bounds.getEast() - bounds.getWest());
-        const basePadding = 0.5;
-        const adaptivePadding = Math.max(0.2, basePadding - (areaSize * 100));
-        
-        map.fitBounds(bounds.pad(adaptivePadding));
-      </script>
-    </body>
-    </html>
-  `;
+    const uint8Array = new Uint8Array(buffer);
+    const base64Image = 'data:image/jpeg;base64,' + Buffer.from(uint8Array).toString('base64');
 
-  await page.setContent(htmlContent);
-  await page.waitForSelector('#map');
-
-  // Wait for tiles to load
-  await page.evaluate(() => {
-    return new Promise((resolve) => {
-      const checkTiles = setInterval(() => {
-        const tilesLoaded = document.getElementsByClassName('leaflet-tile-loaded').length > 0;
-        if (tilesLoaded) {
-          clearInterval(checkTiles);
-          resolve(true);
-        }
-      }, 100);
-    });
-  });
-
-  // Take a high-quality screenshot
-  const imageBuffer = await page.screenshot({
-    fullPage: true,
-    type: 'jpeg',
-    quality: 100,
-  });
-
-  await browser.close();
-
-  //compress image
-  const compressedImageBuffer = await sharp(imageBuffer).jpeg({ quality: 50 }).toBuffer();
-
-  const base64Image = 'data:image/jpeg;base64,' + Buffer.from(compressedImageBuffer).toString('base64');
-
-  return base64Image;
+    return base64Image;
+  } catch (error) {
+    console.error('Error generating area image:', error);
+    throw new Error('Failed to generate area image: ' + (error as Error).message);
+  }
 }
 
 
