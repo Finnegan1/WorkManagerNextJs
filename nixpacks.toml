@@ -1,50 +1,26 @@
-# nixpacks.toml
-
-[project]
-frontal = "nodejs"
-default_version = "16"
-
-# Add the necessary system dependencies for Puppeteer and headless Chromium.
-[system]
-packages = [
-  "libstdc++",   # C++ standard library
-  "libx11",      # X Window System
-  "libx11-dev",  # Development headers for X11
-  "libxss1",     # Screensaver extension library for X11
-  "libnss3",     # Network Security Services
-  "libatk1.0-0", # ATK accessibility toolkit
-  "libatk-bridge2.0-0", # ATK bridge module
-  "libcairo2",   # Cairo 2D graphics library
-  "libpangocairo-1.0-0", # Pango text layout and rendering
-  "libxcomposite1", # Xcomposite extension to the X Window System
-  "libxdamage1", # X Damage extension library for X11
-  "libxrandr2",  # X randr extension library
-  "libgbm-dev",  # Generic buffer management for graphics
-  "libglib2.0-0", # Low-level system library supporting threading, I/O and more
-  "libgtk-3-0",  # GTK+ graphical user interface library
-  "libpango-1.0-0", # Pango library for layout and rendering
-  "libasound2",  # ALSA sound system library
-  "fonts-liberation"  # Liberation fonts, a Chromium dependency
-]
-
 [phases]
-
-  # Install phase where we also install Puppeteer with npm
-  [phases.install]
-    command = "npm install"
-
-  # We add the build command specific to Next.js
-  [phases.build]
-    command = "npm run build"
-
-# The start command to kick things off
-[start]
-command = "npm run start"
-
-# Expose ports (Next.js default is port 3000)
-[ports]
-main = 3000
-
-# Set environment variables. Puppeteer requires some environment setup.
+  [phases.setup]
+    aptPkgs = [
+      'fonts-liberation',
+      'libappindicator3-1',
+      'libasound2',
+      'libatk-bridge2.0-0',
+      'libatk1.0-0',
+      'libgbm1',
+      'libgtk-3-0',
+      'libnspr4',
+      'libnss3',
+      'libx11-xcb1',
+      'libxcomposite1',
+      'libxcursor1',
+      'libxdamage1',
+      'libxfixes3',
+      'libxi6',
+      'libxrandr2',
+      'libxss1',
+      'libxtst6',
+      'xdg-utils'
+  ]
+  
 [environment]
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "false"  # Puppeteer should download Chromium
