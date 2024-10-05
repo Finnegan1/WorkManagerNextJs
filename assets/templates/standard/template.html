@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sachsenforst Hinweise für Waldbesucher</title>
+    <style>
+        html {
+            margin: 0px;
+            padding: 0px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0px;
+            padding: 0px;
+            line-height: 1.6;
+            width: 100vw;
+            height: 100vh;
+            font-size: 11px;
+            /* Reduced from 12px to 10px */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header {
+            width: 100vw;
+        }
+
+        .footer {
+            width: 100vw;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            /* Reduced from 20px to 18px */
+        }
+
+        .content {
+            display: flex;
+            flex-direction: row;
+            margin-top: 0px;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+
+        .content-left {
+            flex: 2;
+            padding: 10px;
+            border-right: 1px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo-erleben-lang {
+            width: 80%;
+            height: auto;
+        }
+
+        .content-center {
+            flex: 4;
+            padding: 10px;
+        }
+
+        .area-image{
+            width: 100%;
+            height: auto;
+        }
+
+        .content-right {
+            flex: 4;
+            padding: 10px;
+        }
+
+        .content h2 {
+            background-color: #004d32;
+            color: #fff;
+            padding: 4px;
+            margin-bottom: 4px;
+            margin-top: 4px;
+            font-size: 12px;
+            /* Reduced from 16px to 14px */
+        }
+
+        h3 {
+            color: #004d32;
+            font-size: 12px;
+            /* Reduced from 14px to 12px */
+        }
+
+        ul,
+        p {
+            margin: 0 0 10px;
+            text-align: justify;
+            /* Justifies text to both sides */
+            hyphens: auto;
+            /* Enable automatic hyphenation */
+            line-height: 1.6;
+            /* Optional: Enhance line spacing for better readability */
+            word-wrap: break-word;
+            /* Optional: Break long words at the end of lines */
+        }
+
+        .danger {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <img class="header"
+        src="header.png"
+        alt="header">
+    <div class="content">
+        <div class="content-left">
+            <div>
+                <p><strong>Forstrevier:</strong><br>Cunnersdorf</p>
+                <p><strong>Information:</strong><br>RL05/05/2024</p>
+            </div>
+            <img class="logo-erleben-lang"
+                src="logo_natur_erleben_lang.png"
+                alt="info">
+            <div>
+                Herausgegeben von: <br>
+                SACHSENFORST <br>
+                Nationalperk- und Fortsverwaltung <br>
+                Sächsische Schweiz Elbe 4 <br>
+                01814 Bad Schandau <br><br>
+                Bad Schandau, den
+                {{CURRENT_DATE}}
+            </div>
+        </div>
+
+        <div class="content-center content-text">
+            <p>
+                <strong>SACHSENFORST</strong> informiert, dass im Rahmen planmäßiger Waldpflege- und Forstarbeiten
+                im Staatswald der Nationalpark- und Forstverwaltung Sächsische Schweiz vorübergehend nachfolgend näher
+                bezeichnete Waldbereiche und markierten Wanderwege zum Teil nur eingeschränkt durch Besucher nutzbar
+                sind:
+            </p>
+
+            <h2>Zeitraum</h2>
+            <p>vom {{START_DATE}} - {{END_DATE}}</p>
+
+            <h2>Arbeiten</h2>
+            <p>Holzernte Grünholzeinschlag und Schadholz</p>
+
+            <h2>Waldgebiet</h2>
+            <p>Winterleite / Katzstein / Spitzstein <br> Blankengründel</p>
+
+            <h2>Wanderwege im Gebiet</h2>
+            <ul>
+                <li>Wege können zeitweise gesperrt sein</li>
+                <li>Forststeig teilweise (Umleitung)</li>
+            </ul>
+
+            <h2>Karte</h2>
+            <img class="area-image" src="{{IMAGE}}" alt="Waldgebiet">
+        </div>
+
+        <div class="content-right">
+            <h2>Hinweise</h2>
+            <p>
+                {{DESCRIPTION}}
+            </p>
+            <p>
+                Die Waldbesucher werden um Aufmerksamkeit und Rücksichtnahme gebeten. Bereiche, in denen
+                Holzeinschlagsarbeiten stattfinden, werden abschnittsweise und kurzfristig gesperrt und dürfen
+                insbesondere aus Sicherheitsgründen nicht betreten werden.
+                <strong>Es besteht Lebensgefahr.</strong>
+            </p>
+
+            <p>
+                Waldwege dienen als Zufahrt für Arbei-ter, Maschinen, Holztransporte oder auch Rettungskräfte.
+                Beschädigungen an Wanderwegen werden nach Abschluss der Arbeiten wieder beseitigt.
+            </p>
+
+            <h3>Zur Beachtung:</h3>
+            <p>
+                Das Betreten des Waldes erfolgt auf eigene Gefahr. Zeitraum und Arbeitsbereiche können sich z. B.
+                aufgrund von unvorhergesehenen Ereignissen ändern.
+                Darüber hinaus finden regelmäßig weitere Forstarbeiten im Wald statt. Absperrungen und Hinweise sind
+                einzuhalten,
+                da besonders bei Waldpflegearbeiten auch Kronenteile und splitternde Äste herabfallen können. Eine
+                Haftung des SACHSENFORSTES ist ausgeschlossen.
+            </p>
+            <p>
+                SACHSENFORST bittet alle Waldbesucher nebenstehende Hinweise „Natur erleben & bewahren" bei der Erholung
+                in Wald und Natur zu beachten und bei ihrem Waldbesuch achtsam zu sein.
+            </p>
+
+            <h3>Mehr Informationen:</h3>
+            <ul>
+                <li><a href="http://www.sachsenforst.de">www.sachsenforst.de</a></li>
+                <li>Bei der Tourismusinformation oder direkt bei Ihrem Revierförster</li>
+            </ul>
+        </div>
+    </div>
+    <img class="footer"
+        src="footer.png"
+        alt="footer">
+</body>
+
+</html>

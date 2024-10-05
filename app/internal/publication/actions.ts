@@ -5,6 +5,7 @@ import { WorkArea, PdfTemplate } from "@prisma/client";
 import StaticMaps from 'staticmaps';
 import fs from 'fs';
 import path from 'path';
+import { PDFDocument } from 'pdf-lib'
 
 export async function fetchWorkAreas(startDate: Date, endDate: Date) {
   return prisma.workArea.findMany({
@@ -16,8 +17,6 @@ export async function fetchWorkAreas(startDate: Date, endDate: Date) {
 }
 
 export async function sendPDFByEmail(email: string, selectedAreaIds: number[]) {
-  // In a real application, you would generate a PDF and send it via email
-  // For this example, we'll just return a success message
   console.log('Sending PDF to email:', email, selectedAreaIds)
   return { success: true, message: 'PDF sent successfully' }
 }
@@ -56,34 +55,80 @@ export async function generateAreaImage(workArea: WorkArea) {
   }
 }
 
+async function generatePdfPage(workArea: WorkArea) {
+  const form = new FormData();
+  const baseFilePath = path.join(process.cwd(), 'assets', 'templates', "standard");
+
+  const baseTemplateFilePath = path.join(baseFilePath, 'template.html');
+  const baseTemplate = fs.readFileSync(baseTemplateFilePath);
+
+  const footerFilePath = path.join(baseFilePath, 'footer.png');
+  const footer = fs.readFileSync(footerFilePath);
+
+  const headerFilePath = path.join(baseFilePath, 'header.png');
+  const header = fs.readFileSync(headerFilePath);
+
+  const logoNaturErlebenLangFilePath = path.join(baseFilePath, 'logo_natur_erleben_lang.png');
+  const logoNaturErlebenLang = fs.readFileSync(logoNaturErlebenLangFilePath);
+
+  const image = await generateAreaImage(workArea)
+
+  const html = baseTemplate.toString()
+    .replace(/{{CURRENT_DATE}}/g, new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }))
+    .replace(/{{START_DATE}}/g, `${workArea.startTime.getDate()}.${workArea.startTime.getMonth()}.${workArea.startTime.getFullYear()}`)
+    .replace(/{{END_DATE}}/g, `${workArea.endTime.getDate()}.${workArea.endTime.getMonth()}.${workArea.endTime.getFullYear()}`)
+    .replace(/{{IMAGE}}/g, image)
+    .replace(/{{DESCRIPTION}}/g, workArea.description || '')
+    .replace(/{{TYPE}}/g, workArea.type)
+
+  //baseTemplate
+  form.append('index.html', new Blob([html]), 'index.html');
+  //assets
+  form.append('footer.png', new Blob([footer]), 'footer.png');
+  form.append('header.png', new Blob([header]), 'header.png');
+  form.append('logo_natur_erleben_lang.png', new Blob([logoNaturErlebenLang]), 'logo_natur_erleben_lang.png');
+  //styling
+  form.append('marginTop', '0');
+  form.append('marginRight', '0');
+  form.append('marginBottom', '0');
+  form.append('marginLeft', '0');
+
+  const response = await fetch(
+    'https://gotenberg.finnegan.dev/forms/chromium/convert/html',
+    {
+      method: 'POST',
+      body: form
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  } 
+  
+  const arrayBuffer = await response.arrayBuffer();
+  return arrayBuffer 
+}
+
 
 export async function generatePDF(workAreas: WorkArea[], template: PdfTemplate) {
   try {
-    console.log(workAreas);
-    console.log(template);
-    const form = new FormData();
-    const filePath = path.join(process.cwd(), 'assets', 'templates', 'template.html');
-    const file = fs.readFileSync(filePath);
-    //replace in the html file all {{url}} with the url http://localhost:3000
-    const html = file.toString().replace(/{{BASE_URL}}/g, process.env.BASE_URL as string);
-    form.append('index.html', new Blob([html]), 'index.html');
+   
+    console.log(template.id)
+    const pdfBuffers = await Promise.all(workAreas.map((workArea) => generatePdfPage(workArea)))
 
-    const response = await fetch(
-      'https://gotenberg.finnegan.dev/forms/chromium/convert/html',
-      {
-        method: 'POST',
-        body: form
-      }
-    );
+    const mergedPdf = await PDFDocument.create();
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    for (const pdfBuffer of pdfBuffers) {
+      const pdf = await PDFDocument.load(pdfBuffer);
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => {
+        mergedPdf.addPage(page);
+      });
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    fs.writeFileSync('output.pdf', Buffer.from(uint8Array));
-    const base64 = Buffer.from(uint8Array).toString('base64');
+    const mergedPdfBytes = await mergedPdf.save();
+
+    const base64 = Buffer.from(mergedPdfBytes).toString('base64');
     return base64;
 
   } catch (error) {

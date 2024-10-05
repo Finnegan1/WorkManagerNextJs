@@ -40,7 +40,6 @@ export default function PublishPage() {
       const selectedWorkAreas = workAreas.filter(area => selectedAreas.includes(area.id));
       const pdfData = await generatePDF(selectedWorkAreas, template);
       
-      // Convert base64 to Blob
       const byteCharacters = atob(pdfData);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -49,7 +48,6 @@ export default function PublishPage() {
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: 'application/pdf' });
 
-      // Create a link and trigger download
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
       link.download = 'work_areas_report.pdf';
