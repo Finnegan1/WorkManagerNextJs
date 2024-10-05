@@ -1,8 +1,8 @@
-import NextAuth, { CustomJWT, Session } from 'next-auth';
+import NextAuth, { Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/lib/prisma';
-import { User } from '@prisma/client';
+import { User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 
 export const authOptions = {
@@ -14,18 +14,30 @@ export const authOptions = {
         password: { label: 'Password', type: 'password' }
       },
       authorize: async (credentials) => {
-        if (!credentials?.email) {
-          throw new Error("Email is required");
+        if (!credentials) {
+          throw new Error("Credentials are required");
         }
+        if (!credentials.email || !credentials.password) {
+          throw new Error("Email and password are required");
+        }
+
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
-        if (user && user.password === credentials.password) {
-          console.log("login successful", user)
-          return user;
+        if (!user) {
+          throw new Error("Login failed");
         }
-        console.log("login failed", user)
-        return null;
+        if (user.password !== credentials.password) {
+          throw new Error("Login failed");
+        }
+
+        const authUser: User = {
+          id: user.id,
+          name: user.name || "",
+          email: user.email,
+          role: user.role
+        }
+        return authUser
       }
     })
   ],
@@ -38,24 +50,20 @@ export const authOptions = {
     signIn: '/auth/login',
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT, user: User }){
-      if (!user) {
-        return token
-      }
-
-      token.user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
+    async jwt({token, user}: {token: JWT, user: User}){
+      console.log(token)
+      if (user) {
+        token.user = user
       }
       return token
     },
-    async session({ session, token }: { session: Session, token: CustomJWT}){
-      return {
-        ...session,
-        user: token.user
+    async session({ session, token }: { session: Session, token: JWT}){
+      console.log(session)
+      if (token.user) {
+        session.user = token.user
       }
+      console.log(session)
+      return session
     }
   }
 };
