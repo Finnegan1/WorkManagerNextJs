@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
-import { FeatureCollection } from 'geojson';
 import { LatLngExpression, LatLngTuple } from 'leaflet';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

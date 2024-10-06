@@ -2,8 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { tokenDecoded } from '@/lib/utils/auth'
-import { Area, WorkAreaRestrictionLevel, WorkAreaType } from '@prisma/client'
-import { InputJsonValue } from '@prisma/client/runtime/library'
+import { Area, WorkAreaRestrictionLevel } from '@prisma/client'
 import { redirect } from 'next/navigation'
 
 export const getForestryRanges = async () => {
