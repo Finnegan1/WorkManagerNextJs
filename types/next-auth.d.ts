@@ -1,5 +1,5 @@
 import NextAuth, { DefaultSession, DefaultUser} from 'next-auth';
-import { JWT } from "next-auth/jwt"
+import { JWT, DefaultJWT } from "next-auth/jwt"
 
 declare module 'next-auth' {
   /**
@@ -24,11 +24,15 @@ declare module 'next-auth' {
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
-    user?: {
+    sub: string;
+    user: {
       id: string;
       name: string;
       email: string;
       role: string;
-    }
+    },
+    iat: number;
+    exp: number;
+    jti: string;
   }
 }

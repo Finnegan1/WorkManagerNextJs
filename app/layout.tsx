@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import prisma from "@/lib/prisma";
 import { createAdminUser } from "@/zscript_create_user";
 import type { Viewport } from 'next'
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,13 +29,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'WorkManager',
   description: 'Platform for forest workers to manage and communicate work activities',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    minimumScale: 1,
-    userScalable: false,
-  },
 }
 
 export default async function RootLayout({
@@ -61,6 +55,7 @@ export default async function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           {children}
+          <Toaster />
         </body>
       </Providers>
     </html>

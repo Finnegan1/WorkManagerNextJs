@@ -19,7 +19,7 @@ export default function Login() {
         if (result?.error) {
             alert(`Login failed: ${result.error}`)
         } else {
-            router.push('/internal')
+            router.push('/intern')
         }
     }
 

@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { PdfTemplate } from "@prisma/client";
-import { getTemplates } from "@/app/internal/publication/templates/actions";
+import { getTemplates } from "@/app/intern/veroeffentlichung/templates/actions";
 import {
   Table,
   TableBody,
@@ -35,14 +35,14 @@ export default function TemplatePickDialog({
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogContent className="max-w-3xl">
             <DialogHeader>
-                <DialogTitle>Select Template</DialogTitle>
+                <DialogTitle>Vorlage auswählen</DialogTitle>
             </DialogHeader>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead>Beschreibung</TableHead>
+                  <TableHead>Aktion</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -55,7 +55,7 @@ export default function TemplatePickDialog({
                         handleSelectTemplate(template);
                         setIsOpen(false);
                       }}>
-                        Select
+                        Auswählen
                       </Button>
                     </TableCell>
                   </TableRow>

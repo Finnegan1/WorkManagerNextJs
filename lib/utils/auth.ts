@@ -1,9 +1,13 @@
 import { headers, cookies } from 'next/headers'
 import { getToken } from 'next-auth/jwt'
 import jwt from 'jsonwebtoken'
-import { CustomJWT } from 'next-auth'
+import { JWT } from 'next-auth/jwt'
 
-export async function getSignedToken() {
+/**
+ * Returns the still signed JWT as a string.
+ * @returns {Promise<string>}
+ */
+export async function tokenSigned() {
     // Obtain headers and cookies
     const reqHeaders = Object.fromEntries(headers())
     const reqCookies = Object.fromEntries(
@@ -29,10 +33,15 @@ export async function getSignedToken() {
     return jwt.sign(token, secret)
 }
 
-//equivalent to getToken() => get decoded token
-export async function getDecodedToken(): Promise<CustomJWT> {
-    const token = await getSignedToken()
+
+/**
+ * Return the decoded JWT content.
+ * Equivalent to getToken() but for server actions with no request object
+ * @returns {Promise<JWT>}
+ */
+export async function tokenDecoded(): Promise<JWT> {
+    const token = await tokenSigned()
     const secret = process.env.NEXTAUTH_SECRET as string
-    const decoded = jwt.verify(token, secret) as CustomJWT
+    const decoded = jwt.verify(token, secret) as JWT
     return decoded
 }

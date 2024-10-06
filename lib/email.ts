@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export const sendPasswordResetEmail = async (email: string, password: string) => {
+export const sendAccountCreatedEmail = async (email: string, password: string) => {
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
@@ -12,8 +12,8 @@ export const sendPasswordResetEmail = async (email: string, password: string) =>
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: 'Your new password',
-    text: `Your new password is: ${password}`
+    subject: 'Your new account',
+    text: `Your new account is created.\n\nYour password is: ${password}\nPlease change your password after logging in as soon as possible.`
   };
 
   await transporter.sendMail(mailOptions);

@@ -1,11 +1,12 @@
-import NextAuth, { Session } from 'next-auth';
+import NextAuth, { AuthOptions, Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/lib/prisma';
 import { User } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
+import { compare } from 'bcryptjs';
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -14,6 +15,7 @@ export const authOptions = {
         password: { label: 'Password', type: 'password' }
       },
       authorize: async (credentials) => {
+        console.log("authorize")
         if (!credentials) {
           throw new Error("Credentials are required");
         }
@@ -24,10 +26,14 @@ export const authOptions = {
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         });
+
         if (!user) {
           throw new Error("Login failed");
         }
-        if (user.password !== credentials.password) {
+
+        const isMatch = await compare(credentials.password, user.password)
+
+        if (!isMatch) {
           throw new Error("Login failed");
         }
 
@@ -51,18 +57,17 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({token, user}: {token: JWT, user: User}){
-      console.log(token)
+      console.log("jwt")
       if (user) {
         token.user = user
       }
       return token
     },
     async session({ session, token }: { session: Session, token: JWT}){
-      console.log(session)
+      console.log("session")
       if (token.user) {
         session.user = token.user
       }
-      console.log(session)
       return session
     }
   }

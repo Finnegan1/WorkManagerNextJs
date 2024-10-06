@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '@/lib/prisma';
-import { sendPasswordResetEmail } from '@/lib/email';
+import { sendAccountCreatedEmail } from '@/lib/email';
 
 const createUser = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
@@ -15,7 +15,7 @@ const createUser = async (req: NextApiRequest, res: NextApiResponse) => {
       }
     });
 
-    await sendPasswordResetEmail(email, password);
+    await sendAccountCreatedEmail(email, password);
 
     res.status(201).json(user);
   } else {

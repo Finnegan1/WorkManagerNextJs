@@ -2,16 +2,20 @@
 
 import React, { useRef, useEffect } from 'react'
 import { MapContainer, TileLayer, FeatureGroup } from 'react-leaflet'
-import { EditControl } from 'react-leaflet-draw'
 import { FeatureGroup as LeafletFeatureGroup } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw.css'
+import L from 'leaflet';
+import EditControlFC from './EditControlFC'
+import type { FeatureCollection } from 'geojson';
+import { calculateBounds } from './FitBounds'
 
 interface CreateWorkAreaMapProps {
-  onAreaChange: (area: any) => void
+  onAreaChange: (area: FeatureCollection) => void
+  currentArea: FeatureCollection
 }
 
-export default function CreateWorkAreaMap({ onAreaChange }: CreateWorkAreaMapProps) {
+export default function CreateWorkAreaMap({ onAreaChange, currentArea }: CreateWorkAreaMapProps) {
   const featureGroupRef = useRef<LeafletFeatureGroup | null>(null)
 
   useEffect(() => {
@@ -22,30 +26,26 @@ export default function CreateWorkAreaMap({ onAreaChange }: CreateWorkAreaMapPro
     }
   }, [])
 
-  const handleCreated = (e: any) => {
-    const layer = e.layer
-    if (featureGroupRef.current) {
+  useEffect(() => {
+    if (featureGroupRef.current && currentArea) {
       featureGroupRef.current.clearLayers()
-      featureGroupRef.current.addLayer(layer)
+      const geoJsonLayer = L.geoJSON(currentArea)
+      geoJsonLayer.eachLayer((layer: any) => {
+        featureGroupRef.current!.addLayer(layer);
+      });
     }
-    onAreaChange(layer.toGeoJSON())
-  }
+  }, [currentArea])
 
   return (
-    <MapContainer center={[51.0509, 13.7383]} zoom={13} style={{ height: '100%', width: '100%' }}>
+    <MapContainer 
+      style={{ height: '100%', width: '100%' }}
+      bounds={calculateBounds([{
+        area: JSON.stringify(currentArea)
+      }])}
+    >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <FeatureGroup ref={featureGroupRef}>
-        <EditControl
-          position="topright"
-          onCreated={handleCreated}
-          draw={{
-            rectangle: false,
-            circle: false,
-            circlemarker: false,
-            marker: false,
-            polyline: false,
-          }}
-        />
+        <EditControlFC geojson={currentArea} setGeojson={onAreaChange} />
       </FeatureGroup>
     </MapContainer>
   )

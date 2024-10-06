@@ -11,6 +11,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { FitBounds } from "./FitBounds";
 
 interface MapProps {
   posix: LatLngExpression | LatLngTuple,
@@ -35,6 +36,7 @@ export default function WorkAreasOverviewMap(Map: MapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+      <FitBounds workAreas={Map.workAreas} />
       {Map.workAreas.map((workArea) => {
         const area = JSON.parse(workArea.area as string)
         return (
@@ -51,20 +53,20 @@ export default function WorkAreasOverviewMap(Map: MapProps) {
             <Popup>
               <div className="font-sans max-w-[300px]">
                 <h3 className="text-slate-800 font-bold text-lg mb-2">{workArea.name}</h3>
-                <p className="text-slate-700 mb-4">{workArea.description || 'No description available.'}</p>
+                <p className="text-slate-700 mb-4">{workArea.description || 'Keine Beschreibung verfügbar.'}</p>
                 <ul className="list-none p-0 mb-4">
-                  <li><span className="font-semibold">Type:</span> {workArea.type}</li>
-                  <li><span className="font-semibold">Restriction Level:</span> {workArea.restrictionLevel}</li>
-                  <li><span className="font-semibold">Start Time:</span> {formatDate(workArea.startTime)}</li>
-                  <li><span className="font-semibold">End Time:</span> {formatDate(workArea.endTime)}</li>
-                  <li><span className="font-semibold">Auto End:</span> {workArea.autoEnd ? 'Yes' : 'No'}</li>
+                  <li><span className="font-semibold">Typ:</span> {workArea.type}</li>
+                  <li><span className="font-semibold">Einschränkungsstufe:</span> {workArea.restrictionLevel}</li>
+                  <li><span className="font-semibold">Startzeit:</span> {formatDate(workArea.startTime)}</li>
+                  <li><span className="font-semibold">Endzeit:</span> {formatDate(workArea.endTime)}</li>
+                  <li><span className="font-semibold">Automatisches Ende:</span> {workArea.autoEnd ? 'Ja' : 'Nein'}</li>
                 </ul>
                 {workArea.rerouting && (
-                  <p className="mb-4"><span className="font-semibold">Rerouting:</span> {workArea.rerouting}</p>
+                  <p className="mb-4"><span className="font-semibold">Umleitung:</span> {workArea.rerouting}</p>
                 )}
-                <Link href={`/internal/work-areas/${workArea.id}`}>
+                <Link href={`/intern/warnungen/${workArea.id}`}>
                   <Button>
-                    View Details
+                    Details anzeigen
                   </Button>
                 </Link>
               </div>

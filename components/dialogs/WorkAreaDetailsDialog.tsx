@@ -19,7 +19,7 @@ interface WorkAreaDetailsDialogProps {
 export default function WorkAreaDetailsDialog({ workArea, onClose }: WorkAreaDetailsDialogProps) {
   useEffect(() => {
     // This is a workaround for a known issue with Leaflet in React
-    delete L.Icon.Default.prototype._getIconUrl
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: markerIcon2x,
       iconUrl: markerIcon,
@@ -32,26 +32,26 @@ export default function WorkAreaDetailsDialog({ workArea, onClose }: WorkAreaDet
       <DialogContent className="w-11/12 max-w-lg max-h-[90vh] overflow-y-auto z-[100]">
         <DialogHeader>
           <DialogTitle>{workArea.name}</DialogTitle>
-          <DialogDescription>Work Area Details</DialogDescription>
+          <DialogDescription>Arbeitsbereich Details</DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 py-2">
           <div>
-            <strong>Type:</strong> {workArea.type}
+            <strong>Typ:</strong> {workArea.type}
           </div>
           <div>
-            <strong>Restriction Level:</strong> {workArea.restrictionLevel}
+            <strong>Einschränkungsstufe:</strong> {workArea.restrictionLevel}
           </div>
           <div>
-            <strong>Start Time:</strong> {workArea.startTime.toLocaleString()}
+            <strong>Startzeit:</strong> {workArea.startTime.toLocaleString()}
           </div>
           <div>
-            <strong>End Time:</strong> {workArea.endTime.toLocaleString()}
+            <strong>Endzeit:</strong> {workArea.endTime.toLocaleString()}
           </div>
           <div>
-            <strong>Description:</strong> {workArea.description}
+            <strong>Beschreibung:</strong> {workArea.description}
           </div>
           <div>
-            <strong>Rerouting:</strong> {workArea.rerouting}
+            <strong>Umleitung:</strong> {workArea.rerouting}
           </div>
           <div className="h-[200px] w-full mt-2">
             <WorkAreaEntryMap workAreas={[workArea]} className='h-[200px] w-full' />
