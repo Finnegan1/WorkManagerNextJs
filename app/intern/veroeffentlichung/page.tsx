@@ -93,7 +93,7 @@ export default function PublishPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">Auswählen</TableHead>
-              <TableHead>Name</TableHead>
+              <TableHead>Kurzbeschreibung</TableHead>
               <TableHead>Typ</TableHead>
               <TableHead>Einschränkungsstufe</TableHead>
               <TableHead>Startzeit</TableHead>
@@ -110,7 +110,7 @@ export default function PublishPage() {
                     onCheckedChange={() => handleSelectArea(area.id)}
                   />
                 </TableCell>
-                <TableCell className="font-medium">{area.name}</TableCell>
+                <TableCell className="font-medium">{area.shortDescription}</TableCell>
                 <TableCell>{area.type}</TableCell>
                 <TableCell>{area.restrictionLevel}</TableCell>
                 <TableCell>{formatDate(area.startTime)}</TableCell>

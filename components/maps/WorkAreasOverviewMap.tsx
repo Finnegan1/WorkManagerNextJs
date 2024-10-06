@@ -36,7 +36,7 @@ export default function WorkAreasOverviewMap(Map: MapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      <FitBounds workAreas={Map.workAreas} />
+      <FitBounds areas={Map.workAreas} />
       {Map.workAreas.map((workArea) => {
         const area = JSON.parse(workArea.area as string)
         return (

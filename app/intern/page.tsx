@@ -12,7 +12,7 @@ export default async function Home() {
   const token = await tokenDecoded()
 
   // Fetch current projects (work areas that have started but not ended)
-  const currentProjects = await prisma.workArea.findMany({
+  const currentAreas = await prisma.area.findMany({
     where: {
       startTime: { lte: new Date() },
       endTime: { gt: new Date() },
@@ -23,7 +23,7 @@ export default async function Home() {
   })
 
   // Fetch upcoming tasks (work areas that haven't started yet)
-  const upcomingTasks = await prisma.workArea.findMany({
+  const upcomingAreas = await prisma.area.findMany({
     where: {
       startTime: { gt: new Date() },
       createdById: token.user.id
@@ -33,7 +33,7 @@ export default async function Home() {
   })
 
   // Count areas with restricted access
-  const restrictedAreasCount = await prisma.workArea.count({
+  const restrictedAreasCount = await prisma.area.count({
     where: {
       restrictionLevel: { not: 'none' },
       endTime: { gt: new Date() },
@@ -41,7 +41,7 @@ export default async function Home() {
     }
   })
 
-  await prisma.$disconnect()
+  //await prisma.$disconnect()
 
   return (
     <div className="container mx-auto p-4">
@@ -54,12 +54,12 @@ export default async function Home() {
             <CardDescription>Laufende Sperrungen im Wald</CardDescription>
           </CardHeader>
           <CardContent>
-            {currentProjects.map(project => (
-              <Link href={`/intern/warnungen/${project.id}`} key={project.id}>
-                <div key={project.id} className="mb-4 p-4 border rounded-lg">
-                  <h3 className="font-semibold">{project.name}</h3>
+            {currentAreas.map(area => (
+              <Link href={`/intern/warnungen/${area.id}`} key={area.id}>
+                <div key={area.id} className="mb-4 p-4 border rounded-lg">
+                  <h3 className="font-semibold">{area.shortDescription}</h3>
                   <p className="text-sm text-muted-foreground flex items-center mt-2">
-                    <CalendarDays className="mr-2 h-4 w-4" /> {formatDate(project.startTime)} bis {formatDate(project.endTime)}
+                    <CalendarDays className="mr-2 h-4 w-4" /> {formatDate(area.startTime)} bis {formatDate(area.endTime)}
                   </p>
                 </div>
               </Link>
@@ -73,12 +73,12 @@ export default async function Home() {
             <CardDescription>Geplante Sperrungen für die nahe Zukunft</CardDescription>
           </CardHeader>
           <CardContent>
-            {upcomingTasks.map(task => (
-              <Link href={`/intern/warnungen/${task.id}`} key={task.id}>
-                <div key={task.id} className="mb-4 p-4 border rounded-lg">
-                  <h3 className="font-semibold">{task.name}</h3>
+            {upcomingAreas.map(area => (
+              <Link href={`/intern/warnungen/${area.id}`} key={area.id}>
+                <div key={area.id} className="mb-4 p-4 border rounded-lg">
+                  <h3 className="font-semibold">{area.shortDescription}</h3>
                   <p className="text-sm text-muted-foreground flex items-center mt-2">
-                    <CalendarDays className="mr-2 h-4 w-4" /> {formatDate(task.startTime)} bis {formatDate(task.endTime)}
+                    <CalendarDays className="mr-2 h-4 w-4" /> {formatDate(area.startTime)} bis {formatDate(area.endTime)}
                   </p>
                 </div>
               </Link>

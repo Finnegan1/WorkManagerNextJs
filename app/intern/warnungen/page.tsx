@@ -7,16 +7,16 @@ import { tokenDecoded } from '@/lib/utils/auth';
 import Link from 'next/link';
 
 const DynamicButton = dynamic(() => import('@/components/ui/button').then(mod => mod.Button), {
-  ssr: false
+    ssr: false
 });
 
 const DynamicInput = dynamic(() => import('@/components/ui/input').then(mod => mod.Input), {
-  ssr: false
+    ssr: false
 });
 
 const WorkAreasPage = async () => {
     const Map = useMemo(() => dynamic(
-        () => import('@/components/maps/WorkAreasOverviewMap'),
+        () => import('@/components/maps/AreasOverviewMap'),
         {
             loading: () => <p>A map is loading</p>,
             ssr: false
@@ -24,15 +24,13 @@ const WorkAreasPage = async () => {
     ), [])
 
     const token = await tokenDecoded()
-    console.log(token)
-    console.log(token.user.id)
-    const workAreas = await prisma.workArea.findMany({
+    const areas = await prisma.area.findMany({
         where: {
             createdById: token.user.id
         }
     });
 
-    console.log(workAreas)
+    console.log(areas)
 
     return (
         <div className="container mx-auto p-4">
@@ -41,18 +39,18 @@ const WorkAreasPage = async () => {
             <Card className="mb-4">
                 <h2 className="text-xl font-semibold m-4">Übersicht der Arbeitsbereiche</h2>
                 <div className="h-[400px] w-full">
-                    <Map workAreas={workAreas} posix={[51.505, 13.7373]} zoom={7} />
+                    <Map areas={areas} posix={[51.505, 13.7373]} zoom={7} />
                 </div>
             </Card>
 
             <Link href="/intern/warnungen/erstellen">
                 <DynamicButton className="mb-4">
-                    Neue Workarea erstellen
+                    Neue Arbeitsbereich erstellen
                 </DynamicButton>
             </Link>
 
 
-            {workAreas.length === 0 ? (
+            {areas.length === 0 ? (
                 <p className="text-red-500">Keine Arbeitsbereiche gefunden</p>
             ) : (
                 <>
@@ -61,7 +59,6 @@ const WorkAreasPage = async () => {
                         <TableHeader className="bg-gray-200">
                             <TableRow>
                                 <TableCell className="px-4 py-2 border">ID</TableCell>
-                                <TableCell className="px-4 py-2 border">Name</TableCell>
                                 <TableCell className="px-4 py-2 border">Art</TableCell>
                                 <TableCell className="px-4 py-2 border">Zugangsbeschränkung</TableCell>
                                 <TableCell className="px-4 py-2 border">Startzeit</TableCell>
@@ -69,14 +66,13 @@ const WorkAreasPage = async () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {workAreas.map((workArea) => (
-                                <TableRow key={workArea.id} className="hover:bg-gray-100">
-                                    <TableCell className="px-4 py-2 border">{workArea.id}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{workArea.name}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{workArea.type}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{workArea.restrictionLevel}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{new Date(workArea.startTime).toLocaleString()}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{new Date(workArea.endTime).toLocaleString()}</TableCell>
+                            {areas.map((area) => (
+                                <TableRow key={area.id} className="hover:bg-gray-100">
+                                    <TableCell className="px-4 py-2 border">{area.id}</TableCell>
+                                    <TableCell className="px-4 py-2 border">{area.shortDescription}</TableCell>
+                                    <TableCell className="px-4 py-2 border">{area.restrictionLevel}</TableCell>
+                                    <TableCell className="px-4 py-2 border">{new Date(area.startTime).toLocaleString()}</TableCell>
+                                    <TableCell className="px-4 py-2 border">{new Date(area.endTime).toLocaleString()}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

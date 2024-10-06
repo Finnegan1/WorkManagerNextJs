@@ -37,10 +37,10 @@ export default function CreateWorkAreaMap({ onAreaChange, currentArea }: CreateW
   }, [currentArea])
 
   return (
-    <MapContainer 
+    <MapContainer
       style={{ height: '100%', width: '100%' }}
       bounds={calculateBounds([{
-        area: JSON.stringify(currentArea)
+        restrictedArea: JSON.stringify(currentArea)
       }])}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

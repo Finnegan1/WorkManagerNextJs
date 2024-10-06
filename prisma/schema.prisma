@@ -51,6 +51,9 @@ model User {
   created_work_areas  WorkArea[]          @relation("CreatedWorkAreas")
   assigned_work_areas WorkArea[]          @relation("AssignedWorkAreas")
   changedWorkAreas    WorkAreaChangeLog[] @relation("ChangedWorkAreas")
+
+  created_areas Area[] @relation("CreatedAreas")
+  changeLogs AreaChangeLog[] @relation("ChangedAreas")
 }
 
 enum Role {
@@ -91,11 +94,12 @@ enum WorkAreaRestrictionLevel {
   none
   attention
   danger
+  forbidden
 }
 
 model WorkArea {
   id               Int                      @id @default(autoincrement())
-  name             String
+  shortDescription String
   area             Json
   type             WorkAreaType
   restrictionLevel WorkAreaRestrictionLevel
@@ -139,4 +143,52 @@ model PdfTemplate {
   neededFields String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ForestryRange {
+  id Int @id @default(autoincrement())
+  name String
+  number Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  areas Area[]
+}
+
+model Area {
+  id Int @id @default(autoincrement())
+  shortDescription String
+
+  information String
+
+  startTime DateTime
+  endTime DateTime
+  workDescription String
+  forestSection String
+  trailsInArea String[]
+  restrictionLevel WorkAreaRestrictionLevel
+
+  restrictedAreas Json
+  rerouting Json
+
+  forestryRangeId Int
+  forestryRange ForestryRange @relation(fields: [forestryRangeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy User @relation("CreatedAreas", fields: [createdById], references: [id])
+  createdById String
+  changeLogs AreaChangeLog[]
+}
+
+model AreaChangeLog {
+  id              Int        @id @default(autoincrement())
+  areaId      Int
+  area        Area   @relation(fields: [areaId], references: [id])
+  changedById     String
+  changedBy       User       @relation("ChangedAreas", fields: [changedById], references: [id])
+  changeType      ChangeType
+  previousValues Json
+  newValues      Json
+  createdAt      DateTime   @default(now())
 }

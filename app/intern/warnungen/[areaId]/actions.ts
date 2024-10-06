@@ -3,9 +3,9 @@
 import prisma from "@/lib/prisma"
 import { redirect } from "next/navigation"
 
-export const deleteWorkArea = async (workAreaId: number) => {
-  await prisma.workArea.delete({
-    where: { id: workAreaId }
+export const deleteArea = async (areaId: number) => {
+  await prisma.area.delete({
+    where: { id: areaId }
   })
   redirect('/intern/warnungen')
 }

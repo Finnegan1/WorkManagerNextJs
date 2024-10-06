@@ -1,15 +1,17 @@
 import { LatLngBounds, latLng, latLngBounds } from 'leaflet';
 
-// @ts-expect-error no glue what type is this
-export function calculateBounds(geoJson): LatLngBounds {
-  const bounds = latLngBounds([[-90, -180], [90, 180]]);
-  
+
+export function calculateBounds(geoJson: any): LatLngBounds {
+  const bounds = latLngBounds([]);
   const addCoordinatesToBounds = (coord: number[]) => {
+    console.log(coord)
     bounds.extend(latLng(coord[1], coord[0]));
   };
 
   const traverseCoordinates = (coordinates: any[]) => {
+    console.log(coordinates)
     if (typeof coordinates[0] === 'number') {
+      console.log(coordinates)
       addCoordinatesToBounds(coordinates);
     } else {
       coordinates.forEach(traverseCoordinates);

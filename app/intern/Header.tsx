@@ -15,6 +15,12 @@ import {
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
+
+// Remove these color constants
+// const colorCode = "#01543C"
+// const colorCodeHover = "#013525"
+// const colorSecondary = "#FFC91C"
+
 // Define the navigation structure
 const navigationStructure = [
   { name: 'Übersicht', href: '/intern' },
@@ -68,10 +74,11 @@ export default function Header() {
     if (href === '/intern') {
       return pathname === '/intern' || pathname === '/intern/'
     }
-    return pathname.startsWith(href + '/')
+    return pathname.startsWith(href + '/', 0) || pathname === href
   }
 
-  const navItemStyles = "bg-green-700 text-white hover:bg-green-600 hover:text-white focus:bg-green-600 focus:text-white data-[state=open]:bg-green-600 data-[state=open]:text-white text-base"
+  // Remove custom color from navItemStyles
+  const navItemStyles = `text-base hover:bg-secondary/40`
 
   const renderNavigationItems = (items: typeof navigationStructure, isMobile = false) => {
     return items.map((item) => (
@@ -80,8 +87,8 @@ export default function Header() {
           <>
             <NavigationMenuTrigger className={cn(
               navItemStyles,
-              "flex items-center justify-start px-4 py-2 rounded-md",
-              isActive(item.href) && "bg-green-600",
+              "flex items-center justify-start px-4 py-2 rounded-md bg-primary",
+              isActive(item.href) && `bg-accent`,
               isMobile && "w-full"
             )}>
               {item.name}
@@ -111,7 +118,7 @@ export default function Header() {
                 className={cn(
                   navItemStyles,
                   "flex items-center justify-start px-4 py-2 rounded-md",
-                  isActive(item.href) && "bg-green-600",
+                  isActive(item.href) && `bg-accent`,
                   isMobile && "w-full"
                 )}
                 onClick={isMobile ? toggleMenu : undefined}
@@ -126,11 +133,11 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-green-700 text-white fixed top-0 w-full z-[100]">
+    <header className="bg-primary text-primary-foreground fixed top-0 w-full z-[100]">
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold">
+            <Link href="/" className="text-xl font-bold text-secondary">
               WorkManager
             </Link>
           </div>
@@ -173,7 +180,7 @@ const ListItem = React.forwardRef<
         <a
           ref={ref as React.LegacyRef<HTMLAnchorElement>}
           className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-green-100 hover:text-green-700 focus:bg-green-100 focus:text-green-700",
+           `block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground`,
             className
           )}
           {...props}
