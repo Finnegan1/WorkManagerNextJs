@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { PDFDocument } from 'pdf-lib'
 import type { FeatureCollection } from 'geojson';
+import { formatDate } from '@/lib/utils/dateUtils';
 
 export async function fetchWorkAreas(startDate: Date, endDate: Date) {
   return prisma.workArea.findMany({
@@ -113,10 +114,12 @@ async function generatePdfPage(workArea: WorkArea) {
 
   const image = await generateAreaImage(workArea)
 
+  console.log('workArea', workArea)
+
   const html = baseTemplate.toString()
-    .replace(/{{CURRENT_DATE}}/g, new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }))
-    .replace(/{{START_DATE}}/g, `${workArea.startTime.getDate()}.${workArea.startTime.getMonth()}.${workArea.startTime.getFullYear()}`)
-    .replace(/{{END_DATE}}/g, `${workArea.endTime.getDate()}.${workArea.endTime.getMonth()}.${workArea.endTime.getFullYear()}`)
+    .replace(/{{CURRENT_DATE}}/g, formatDate(new Date()))
+    .replace(/{{START_DATE}}/g, formatDate(workArea.startTime))
+    .replace(/{{END_DATE}}/g, formatDate(workArea.endTime))
     .replace(/{{IMAGE}}/g, image)
     .replace(/{{DESCRIPTION}}/g, workArea.description || '')
     .replace(/{{TYPE}}/g, workArea.type)

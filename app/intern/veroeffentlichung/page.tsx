@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PdfTemplate, WorkArea } from '@prisma/client'
 import dynamic from 'next/dynamic'
 import TemplatePickDialog from '@/components/dialogs/TemplatePickDialog'
+import { formatDate } from '@/lib/utils/dateUtils'
 
 const WorkAreaDetailsDialog = dynamic(() => import('@/components/dialogs/WorkAreaDetailsDialog'), { ssr: false })
 
@@ -112,8 +113,8 @@ export default function PublishPage() {
                 <TableCell className="font-medium">{area.name}</TableCell>
                 <TableCell>{area.type}</TableCell>
                 <TableCell>{area.restrictionLevel}</TableCell>
-                <TableCell>{area.startTime.toLocaleDateString()}</TableCell>
-                <TableCell>{area.endTime.toLocaleDateString()}</TableCell>
+                <TableCell>{formatDate(area.startTime)}</TableCell>
+                <TableCell>{formatDate(area.endTime)}</TableCell>
                 <TableCell><Button size="sm" onClick={() => setDetailsWorkArea(area)}>Ansehen</Button></TableCell>
               </TableRow>
             ))}
