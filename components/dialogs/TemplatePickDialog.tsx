@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { PdfTemplate } from "@prisma/client";
 import { getTemplates } from "@/app/intern/veroeffentlichung/templates/actions";
 import {
   Table,

@@ -1,7 +1,7 @@
 "use client"
 
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import { Area, WorkArea } from "@prisma/client";
+import { Area } from "@prisma/client";
 import React from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";

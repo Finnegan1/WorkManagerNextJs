@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Area, WorkArea } from '@prisma/client'
+import { Area } from '@prisma/client'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import 'leaflet/dist/leaflet.css'
 import React from 'react'

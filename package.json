@@ -10,7 +10,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push",
     "clean-templates": "rm -rf assets/templates && mkdir assets/templates",
-    "clone-templates": "git clone --depth 1 --no-checkout $TEMPLATES_GITHUB_REPO assets/templates && cd assets/templates && git config core.sparseCheckout true && echo '*' > .git/info/sparse-checkout && git checkout main && rm -rf .git"
+    "clone-templates": "if [ -z \"$TEMPLATES_GITHUB_REPO\" ]; then echo \"Error: TEMPLATES_GITHUB_REPO is not set. Please set this environment variable to the GitHub repository URL for your templates.\"; exit 1; else git clone --depth 1 --no-checkout $TEMPLATES_GITHUB_REPO assets/templates && cd assets/templates && git config core.sparseCheckout true && echo '*' > .git/info/sparse-checkout && git checkout main && rm -rf .git; fi"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",

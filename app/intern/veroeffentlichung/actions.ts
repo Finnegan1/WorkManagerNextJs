@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { WorkArea, PdfTemplate, Area } from "@prisma/client";
+import { Area } from "@prisma/client";
 import StaticMaps from 'staticmaps';
 import fs from 'fs';
 import path from 'path';

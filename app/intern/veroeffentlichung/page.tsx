@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Area, PdfTemplate, WorkArea } from '@prisma/client'
+import { Area } from '@prisma/client'
 import dynamic from 'next/dynamic'
 import TemplatePickDialog from '@/components/dialogs/TemplatePickDialog'
 import { formatDate } from '@/lib/utils/dateUtils'
