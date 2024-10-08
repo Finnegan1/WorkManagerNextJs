@@ -139,25 +139,26 @@
 
         <div class="content-center content-text">
             <p>
-                <strong>SACHSENFORST</strong> informiert, dass im Rahmen planmäßiger Waldpflege- und Forstarbeiten
-                im Staatswald der Nationalpark- und Forstverwaltung Sächsische Schweiz vorübergehend nachfolgend näher
-                bezeichnete Waldbereiche und markierten Wanderwege zum Teil nur eingeschränkt durch Besucher nutzbar
-                sind:
+                <strong>SACHSENFORST</strong> informiert, dass im Rahmen planmäßiger Waldpflege- und
+                Forstarbeiten im Staatswald der Nationalpark- und Forstverwaltung Sächsische Schweiz vorübergehend
+                nachfolgend näher bezeichnete Waldbereiche und markierten Wanderwege zum Teil nur eingeschränkt durch
+                Besucher nutzbar sind:
             </p>
 
             <h2>Zeitraum</h2>
             <p>vom {{START_DATE}} - {{END_DATE}}</p>
 
             <h2>Arbeiten</h2>
-            <p>Holzernte Grünholzeinschlag und Schadholz</p>
+            <p>{{WORK_DESCRIPTION}}</p>
 
             <h2>Waldgebiet</h2>
-            <p>Winterleite / Katzstein / Spitzstein <br> Blankengründel</p>
+            <p>{{FOREST_SECTION}}</p>
 
             <h2>Wanderwege im Gebiet</h2>
             <ul>
-                <li>Wege können zeitweise gesperrt sein</li>
-                <li>Forststeig teilweise (Umleitung)</li>
+                {{#each TRAILS_IN_AREA}}
+                <li>{{this}}</li>
+                {{/each}}
             </ul>
 
             <h2>Karte</h2>

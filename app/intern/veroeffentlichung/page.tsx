@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PdfTemplate, WorkArea } from '@prisma/client'
+import { Area, PdfTemplate, WorkArea } from '@prisma/client'
 import dynamic from 'next/dynamic'
 import TemplatePickDialog from '@/components/dialogs/TemplatePickDialog'
 import { formatDate } from '@/lib/utils/dateUtils'
@@ -16,30 +16,30 @@ const WorkAreaDetailsDialog = dynamic(() => import('@/components/dialogs/WorkAre
 export default function PublishPage() {
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
   const [endDate, setEndDate] = useState(new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0])
-  const [workAreas, setWorkAreas] = useState<WorkArea[]>([])
-  const [selectedAreas, setSelectedAreas] = useState<number[]>([])
-  const [detailsWorkArea, setDetailsWorkArea] = useState<WorkArea | null>(null)
+  const [areas, setAreas] = useState<Area[]>([])
+  const [selectedAreaIds, setSelectedAreaIds] = useState<number[]>([])
+  const [detailsWorkArea, setDetailsWorkArea] = useState<Area | null>(null)
   const [email, setEmail] = useState('')
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
 
   const handleFetchAreas = async () => {
     if (startDate && endDate) {
-      const areas = await fetchWorkAreas(new Date(startDate), new Date(endDate))
-      setWorkAreas(areas)
-      setSelectedAreas(areas.map(area => area.id))
+      const fetchedAreas = await fetchWorkAreas(new Date(startDate), new Date(endDate))
+      setAreas(fetchedAreas)
+      setSelectedAreaIds(fetchedAreas.map(area => area.id))
     }
   }
 
   const handleSelectArea = (id: number) => {
-    setSelectedAreas(prev => 
+    setSelectedAreaIds(prev => 
       prev.includes(id) ? prev.filter(areaId => areaId !== id) : [...prev, id]
     )
   }
 
   const handleGeneratePDF = async (template: PdfTemplate) => {
     try {
-      const selectedWorkAreas = workAreas.filter(area => selectedAreas.includes(area.id));
-      const pdfData = await generatePDF(selectedWorkAreas, template);
+      const selectedAreas = areas.filter(area => selectedAreaIds.includes(area.id));
+      const pdfData = await generatePDF(selectedAreas, template);
       
       const byteCharacters = atob(pdfData);
       const byteNumbers = new Array(byteCharacters.length);
@@ -63,7 +63,7 @@ export default function PublishPage() {
 
   const handleSendPDF = async () => {
     if (email) {
-      const result = await sendPDFByEmail(email, selectedAreas)
+      const result = await sendPDFByEmail(email, selectedAreaIds)
       if (result.success) {
         alert(result.message)
       }
@@ -102,16 +102,16 @@ export default function PublishPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {workAreas.map((area) => (
+            {areas.map((area) => (
               <TableRow key={area.id}>
                 <TableCell>
                   <Checkbox
-                    checked={selectedAreas.includes(area.id)}
+                    checked={selectedAreaIds.includes(area.id)}
                     onCheckedChange={() => handleSelectArea(area.id)}
                   />
                 </TableCell>
                 <TableCell className="font-medium">{area.shortDescription}</TableCell>
-                <TableCell>{area.type}</TableCell>
+                <TableCell>{area.shortDescription}</TableCell>
                 <TableCell>{area.restrictionLevel}</TableCell>
                 <TableCell>{formatDate(area.startTime)}</TableCell>
                 <TableCell>{formatDate(area.endTime)}</TableCell>
@@ -133,7 +133,7 @@ export default function PublishPage() {
           <Button onClick={handleSendPDF} className="w-full">PDF per E-Mail senden</Button>
         </div>
       </div>
-      {detailsWorkArea && <WorkAreaDetailsDialog workArea={detailsWorkArea} onClose={() => setDetailsWorkArea(null)} />}
+      {detailsWorkArea && <WorkAreaDetailsDialog area={detailsWorkArea} onClose={() => setDetailsWorkArea(null)} />}
       {
         isTemplateDialogOpen && 
           <TemplatePickDialog 

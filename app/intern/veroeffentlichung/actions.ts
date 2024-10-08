@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { WorkArea, PdfTemplate } from "@prisma/client";
+import { WorkArea, PdfTemplate, Area } from "@prisma/client";
 import StaticMaps from 'staticmaps';
 import fs from 'fs';
 import path from 'path';
@@ -10,7 +10,7 @@ import type { FeatureCollection } from 'geojson';
 import { formatDate } from '@/lib/utils/dateUtils';
 
 export async function fetchWorkAreas(startDate: Date, endDate: Date) {
-  return prisma.workArea.findMany({
+  return prisma.area.findMany({
     where: {
       startTime: { gte: startDate },
       endTime: { lte: endDate }
@@ -23,11 +23,11 @@ export async function sendPDFByEmail(email: string, selectedAreaIds: number[]) {
   return { success: true, message: 'PDF sent successfully' }
 }
 
-export async function generateAreaImage(workArea: WorkArea) {
+export async function generateAreaImage(area: Area) {
   try {
-    console.log('WorkArea received:', workArea);
+    console.log('Area received:', area);
 
-    if (!workArea.area) {
+    if (!area.restrictedAreas) {
       throw new Error('WorkArea area is undefined');
     }
 
@@ -41,23 +41,21 @@ export async function generateAreaImage(workArea: WorkArea) {
 
     const map = new StaticMaps(mapOptions);
     
-    console.log('WorkArea area:', workArea.area);
-    let geojson;
-    try {
-      geojson = JSON.parse(workArea.area as string) as FeatureCollection;
-    } catch (parseError) {
-      console.error('Error parsing workArea.area:', parseError);
-      throw new Error('Failed to parse workArea.area as JSON');
-    }
+    console.log('Area:', area.restrictedAreas);
 
-    console.log('Parsed GeoJSON:', geojson);
+    const geojsonRestrictedArea: FeatureCollection = area.restrictedAreas as any as FeatureCollection;
+    const geojsonRerouting: FeatureCollection = area.rerouting as any as FeatureCollection || null;
 
-    if (geojson && Array.isArray(geojson.features)) {
-      geojson.features.forEach((feature) => {
+
+    console.log('Parsed GeoJSON:', geojsonRestrictedArea);
+    console.log('Parsed GeoJSON:', geojsonRerouting);
+
+    if (geojsonRestrictedArea && Array.isArray(geojsonRestrictedArea.features)) {
+      geojsonRestrictedArea.features.forEach((feature) => {
         if (feature.geometry.type === 'Polygon') {
           const polygon = {
             coords: feature.geometry.coordinates[0],
-            color: '#0000FFBB',
+            color: 'red',
             width: 3,
           };
           map.addPolygon({
@@ -65,6 +63,27 @@ export async function generateAreaImage(workArea: WorkArea) {
             coords: polygon.coords.map(pos => [pos[0], pos[1]])
           });
         } else if (feature.geometry.type === 'LineString') {
+          const line = {
+            coords: feature.geometry.coordinates,
+            color: 'red',
+            width: 3,
+          };
+          map.addLine(
+            {
+              ...line,
+              coords: line.coords.map(pos => [pos[0], pos[1]])
+            }
+          );
+        }
+      });
+    } else {
+      console.log('geojson is undefined or not an array', geojsonRestrictedArea)
+      console.error('geojson is undefined or not an array');
+    }
+
+    if (geojsonRerouting) {
+      geojsonRerouting.features.forEach((feature) => {
+        if (feature.geometry.type === 'LineString') {
           const line = {
             coords: feature.geometry.coordinates,
             color: '#0000FFBB',
@@ -78,9 +97,6 @@ export async function generateAreaImage(workArea: WorkArea) {
           );
         }
       });
-    } else {
-      console.log('geojson is undefined or not an array', geojson)
-      console.error('geojson is undefined or not an array');
     }
 
     await map.render();
@@ -96,7 +112,7 @@ export async function generateAreaImage(workArea: WorkArea) {
   }
 }
 
-async function generatePdfPage(workArea: WorkArea) {
+async function generatePdfPage(area: Area) {
   const form = new FormData();
   const baseFilePath = path.join(process.cwd(), 'assets', 'templates', "standard");
 
@@ -112,17 +128,17 @@ async function generatePdfPage(workArea: WorkArea) {
   const logoNaturErlebenLangFilePath = path.join(baseFilePath, 'logo_natur_erleben_lang.png');
   const logoNaturErlebenLang = fs.readFileSync(logoNaturErlebenLangFilePath);
 
-  const image = await generateAreaImage(workArea)
+  const image = await generateAreaImage(area)
 
-  console.log('workArea', workArea)
+  console.log('area', area)
 
   const html = baseTemplate.toString()
     .replace(/{{CURRENT_DATE}}/g, formatDate(new Date()))
-    .replace(/{{START_DATE}}/g, formatDate(workArea.startTime))
-    .replace(/{{END_DATE}}/g, formatDate(workArea.endTime))
+    .replace(/{{START_DATE}}/g, formatDate(area.startTime))
+    .replace(/{{END_DATE}}/g, formatDate(area.endTime))
     .replace(/{{IMAGE}}/g, image)
-    .replace(/{{DESCRIPTION}}/g, workArea.description || '')
-    .replace(/{{TYPE}}/g, workArea.type)
+    .replace(/{{DESCRIPTION}}/g, area.information || '')
+    .replace(/{{TYPE}}/g, area.workDescription)
 
   //baseTemplate
   form.append('index.html', new Blob([html]), 'index.html');
@@ -153,11 +169,11 @@ async function generatePdfPage(workArea: WorkArea) {
 }
 
 
-export async function generatePDF(workAreas: WorkArea[], template: PdfTemplate) {
+export async function generatePDF(areas: Area[], template: PdfTemplate) {
   try {
    
     console.log(template.id)
-    const pdfBuffers = await Promise.all(workAreas.map((workArea) => generatePdfPage(workArea)))
+    const pdfBuffers = await Promise.all(areas.map((area) => generatePdfPage(area)))
 
     const mergedPdf = await PDFDocument.create();
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { WorkArea } from '@prisma/client'
+import { Area, WorkArea } from '@prisma/client'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import 'leaflet/dist/leaflet.css'
 import React from 'react'
@@ -12,11 +12,11 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 interface WorkAreaDetailsDialogProps {
-  workArea: WorkArea
+  area: Area
   onClose: () => void
 }
 
-export default function WorkAreaDetailsDialog({ workArea, onClose }: WorkAreaDetailsDialogProps) {
+export default function WorkAreaDetailsDialog({ area, onClose }: WorkAreaDetailsDialogProps) {
   useEffect(() => {
     // This is a workaround for a known issue with Leaflet in React
     delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -31,30 +31,24 @@ export default function WorkAreaDetailsDialog({ workArea, onClose }: WorkAreaDet
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="w-11/12 max-w-lg max-h-[90vh] overflow-y-auto z-[100]">
         <DialogHeader>
-          <DialogTitle>{workArea.name}</DialogTitle>
+          <DialogTitle>{area.shortDescription}</DialogTitle>
           <DialogDescription>Arbeitsbereich Details</DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 py-2">
           <div>
-            <strong>Typ:</strong> {workArea.type}
+            <strong>Einschränkungsstufe:</strong> {area.restrictionLevel}
           </div>
           <div>
-            <strong>Einschränkungsstufe:</strong> {workArea.restrictionLevel}
+            <strong>Startzeit:</strong> {area.startTime.toLocaleString()}
           </div>
           <div>
-            <strong>Startzeit:</strong> {workArea.startTime.toLocaleString()}
+            <strong>Endzeit:</strong> {area.endTime.toLocaleString()}
           </div>
           <div>
-            <strong>Endzeit:</strong> {workArea.endTime.toLocaleString()}
-          </div>
-          <div>
-            <strong>Beschreibung:</strong> {workArea.description}
-          </div>
-          <div>
-            <strong>Umleitung:</strong> {workArea.rerouting}
+            <strong>Beschreibung:</strong> {area.information}
           </div>
           <div className="h-[200px] w-full mt-2">
-            <WorkAreaEntryMap workAreas={[workArea]} className='h-[200px] w-full' />
+            <WorkAreaEntryMap areas={[area]} className='h-[200px] w-full' />
           </div>
         </div>
       </DialogContent>

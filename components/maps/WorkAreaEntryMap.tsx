@@ -1,7 +1,7 @@
 "use client"
 
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import { WorkArea } from "@prisma/client";
+import { Area, WorkArea } from "@prisma/client";
 import React from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -9,23 +9,23 @@ import "leaflet-defaulticon-compatibility";
 import { calculateBounds } from "./FitBounds";
 
 interface MapProps {
-  workAreas: WorkArea[]
+  areas: Area[]
   className?: string
 }
 
-export default function WorkAreaEntryMap({ workAreas, className }: MapProps) {
+export default function WorkAreaEntryMap({ areas, className }: MapProps) {
   return (
-    <MapContainer bounds={calculateBounds(workAreas)} className={`z-0 ${className}`}>
+    <MapContainer bounds={calculateBounds(areas.map(area => ({ restrictedArea: area.restrictedAreas as string })))} className={`z-0 ${className}`}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      {workAreas.map((workArea) => {
-        const area = JSON.parse(workArea.area as string);
+      {areas.map((area) => {
+        const restrictedArea = JSON.parse(area.restrictedAreas as string);
         return (
           <GeoJSON
-            key={workArea.id}
-            data={area}
+            key={area.id}
+            data={restrictedArea}
             pathOptions={{
               color: 'blue',
               weight: 2,
