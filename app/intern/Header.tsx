@@ -137,7 +137,7 @@ export default function Header() {
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-secondary">
+            <Link href="/intern" className="text-xl font-bold text-secondary">
               WorkManager
             </Link>
           </div>
