@@ -21,7 +21,7 @@ export default function AreaDetailsMap({ area, rerouting }: { area: FeatureColle
     const bounds = calculateBounds(area.features[0]);
 
     return (
-        <MapContainer style={{ height: '100%', width: '100%' }} bounds={bounds}>
+        <MapContainer style={{ height: '100%', width: '100%', zIndex: 0 }} bounds={bounds}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

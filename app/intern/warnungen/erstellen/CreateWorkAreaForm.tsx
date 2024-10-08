@@ -107,8 +107,8 @@ export default function CreateAreaForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <Card className="w-full max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 w-full">
+      <Card className="w-full mx-auto">
         <CardHeader>
           <CardTitle>Neuen Bereich erstellen</CardTitle>
           <CardDescription>Fülle das Formular aus, um einen neuen Bereich zu erstellen.</CardDescription>

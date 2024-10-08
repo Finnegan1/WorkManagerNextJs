@@ -39,7 +39,7 @@ export default function CreateReroutingMap({ currentArea, currentRerouting, onRe
 
     return (
         <MapContainer
-            style={{ height: '100%', width: '100%' }}
+            style={{ height: '100%', width: '100%', zIndex: 0 }}
             bounds={calculateBounds([{
                 restrictedArea: JSON.stringify(currentArea)
             }])}

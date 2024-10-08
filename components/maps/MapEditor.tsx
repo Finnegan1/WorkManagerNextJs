@@ -35,7 +35,7 @@ const MapEditor = ({ initialArea, onAreaChange }: { initialArea: any, onAreaChan
     <MapContainer
       center={[0, 0]}
       zoom={2}
-      style={{ height: '400px', width: '100%' }}
+      style={{ height: '400px', width: '100%', zIndex: 0 }}
       whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
     >
       <TileLayer

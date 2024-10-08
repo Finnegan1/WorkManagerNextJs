@@ -12,16 +12,18 @@ export default async function Home() {
   const token = await tokenDecoded()
 
   // Fetch current projects (work areas that have started but not ended)
+  const currentDate = new Date( (new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }) )).setHours(0, 0, 0, 0))
+
   const currentAreas = await prisma.area.findMany({
     where: {
-      startTime: { lte: new Date() },
-      endTime: { gt: new Date() },
+      startTime: { lte: currentDate },
+      endTime: { gte: currentDate },
       createdById: token.user.id
     },
     orderBy: { startTime: 'asc' },
     take: 5,
   })
-
+  
   // Fetch upcoming tasks (work areas that haven't started yet)
   const upcomingAreas = await prisma.area.findMany({
     where: {
@@ -50,7 +52,7 @@ export default async function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardHeader>
-            <CardTitle>Aktuelle Sperrungen</CardTitle>
+            <CardTitle>Deine aktuellen Sperrungen</CardTitle>
             <CardDescription>Laufende Sperrungen im Wald</CardDescription>
           </CardHeader>
           <CardContent>
@@ -69,7 +71,7 @@ export default async function Home() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Anstehende Sperrungen</CardTitle>
+            <CardTitle>Deine anstehenden Sperrungen</CardTitle>
             <CardDescription>Geplante Sperrungen für die nahe Zukunft</CardDescription>
           </CardHeader>
           <CardContent>

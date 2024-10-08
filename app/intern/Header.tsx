@@ -133,7 +133,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-primary text-primary-foreground fixed top-0 w-full z-[100]">
+    <header className="bg-primary text-primary-foreground fixed top-0 w-full z-[120]">
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">

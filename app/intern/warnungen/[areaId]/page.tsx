@@ -53,7 +53,7 @@ export default async function AreaDetail({ params }: { params: { areaId: string 
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 pb-8 pt-0 max-w-7xl">
       <nav className="mb-4">
         <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
           <li><Link href="/intern/warnungen" className="hover:text-primary">Arbeitsbereiche</Link></li>
