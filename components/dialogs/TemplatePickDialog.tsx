@@ -17,11 +17,11 @@ export default function TemplatePickDialog({
     isOpen, 
     setIsOpen 
 }: { 
-    handleSelectTemplate: (template: PdfTemplate) => void, 
+    handleSelectTemplate: (template: string) => void, 
     isOpen: boolean, 
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>> 
 }) {
-    const [templates, setTemplates] = useState<PdfTemplate[]>([]);
+    const [templates, setTemplates] = useState<string[]>([]);
 
     useEffect(() => {
         async function fetchTemplates() {
@@ -41,15 +41,13 @@ export default function TemplatePickDialog({
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Beschreibung</TableHead>
                   <TableHead>Aktion</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {templates.map((template) => (
-                  <TableRow key={template.id}>
-                    <TableCell>{template.name}</TableCell>
-                    <TableCell>{template.description}</TableCell>
+                  <TableRow key={template}>
+                    <TableCell>{template}</TableCell>
                     <TableCell>
                       <Button onClick={() => {
                         handleSelectTemplate(template);

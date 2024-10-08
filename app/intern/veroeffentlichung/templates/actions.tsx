@@ -3,6 +3,8 @@
 import prisma from '@/lib/prisma';
 import { PdfTemplate } from '@prisma/client';
 import { JsonArray } from '@prisma/client/runtime/library';
+import { execSync } from 'child_process';
+import fs from 'fs';
 
 export type TemplateCreate = {
     name: string;
@@ -33,14 +35,11 @@ export async function createTemplate(template: TemplateCreate): Promise<PdfTempl
 }
 
 
-export async function getTemplates(): Promise<PdfTemplate[]> {
-    try {
-        const templates = await prisma.pdfTemplate.findMany();
-        return templates;
-    } catch (error) {
-        console.error('Error fetching templates:', error);
-        throw new Error('Failed to fetch templates');
-    }
+export async function getTemplates(): Promise<string[]> {
+    //read which folders exist in assets/templates
+    const folders = fs.readdirSync('assets/templates', { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
+    console.log(folders);
+    return folders;
 }
 
 export async function getTemplate(id: number): Promise<PdfTemplate> {
@@ -88,5 +87,16 @@ export async function deleteTemplate(id: number): Promise<void> {
     } catch (error) {
         console.error('Error deleting template:', error);
         throw new Error('Failed to delete template');
+    }
+}
+
+export async function reloadTemplates() {
+    try {
+        fs.rmSync('assets/templates', { recursive: true, force: true });
+        execSync(`git clone --depth 1 --no-checkout ${process.env.TEMPLATES_GITHUB_REPO} assets/templates && cd assets/templates && git config core.sparseCheckout true && echo '*' > .git/info/sparse-checkout && git checkout main && rm -rf .git`);
+        return true;
+    } catch (error) {
+        console.error('Error reloading templates:', error);
+        throw new Error('Failed to reload templates');
     }
 }

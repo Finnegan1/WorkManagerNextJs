@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchWorkAreas, generatePDF, sendPDFByEmail } from './actions'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,9 +22,16 @@ export default function PublishPage() {
   const [email, setEmail] = useState('')
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
 
+  useEffect(() => {
+    console.log(startDate, endDate)
+  }, [startDate, endDate])
+
   const handleFetchAreas = async () => {
     if (startDate && endDate) {
-      const fetchedAreas = await fetchWorkAreas(new Date(startDate), new Date(endDate))
+      const fetchedAreas = await fetchWorkAreas(
+        new Date( (new Date(startDate + 'T00:00:00').toLocaleString('en-US', { timeZone: 'Europe/Berlin' }) )), 
+        new Date( (new Date(endDate + 'T23:59:59').toLocaleString('en-US', { timeZone: 'Europe/Berlin' })) )
+      )
       setAreas(fetchedAreas)
       setSelectedAreaIds(fetchedAreas.map(area => area.id))
     }
@@ -36,7 +43,7 @@ export default function PublishPage() {
     )
   }
 
-  const handleGeneratePDF = async (template: PdfTemplate) => {
+  const handleGeneratePDF = async (template: string) => {
     try {
       const selectedAreas = areas.filter(area => selectedAreaIds.includes(area.id));
       const pdfData = await generatePDF(selectedAreas, template);
@@ -137,7 +144,7 @@ export default function PublishPage() {
       {
         isTemplateDialogOpen && 
           <TemplatePickDialog 
-            handleSelectTemplate={(template: PdfTemplate) => {handleGeneratePDF(template)}} 
+            handleSelectTemplate={(template: string) => {handleGeneratePDF(template)}} 
             isOpen={isTemplateDialogOpen} 
             setIsOpen={setIsTemplateDialogOpen} 
           />
