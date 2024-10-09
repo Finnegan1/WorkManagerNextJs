@@ -68,17 +68,17 @@ export function FitBounds({ areas }: { areas: PartialArea[] }) {
   }
 
 
-export function calculateBounds(workAreas: PartialArea[]) {
-  console.log("workAreas", workAreas);
-  if (workAreas.length === 0 || JSON.parse(workAreas[0].restrictedArea as string) === null) {
+export function calculateBounds(areas: PartialArea[]) {
+  console.log("areas", areas[0].restrictedArea);
+  if (areas.length === 0 || areas[0].restrictedArea === null) {
     return new LatLngBounds([[50.65, 12.3], [51.65, 13.3]]);
   }
 
   const bounds = new LatLngBounds([]);
 
-  workAreas.forEach((workArea) => {
-    const area = JSON.parse(workArea.restrictedArea as string);
-    console.log("Parsed GeoJSON Area:", area);
+  areas.forEach((area) => {
+    const restrictedArea = area.restrictedArea as any as FeatureCollection;
+    console.log("Parsed GeoJSON Area:", restrictedArea);
 
     const processFeature = (feature: Feature) => {
       console.log("Feature Geometry Type:", feature.geometry.type);
@@ -107,10 +107,10 @@ export function calculateBounds(workAreas: PartialArea[]) {
       }
     };
 
-    if (area.type === "FeatureCollection") {
-      area.features.forEach(processFeature);
-    } else if (area.type === "Feature") {
-      processFeature(area);
+    if (restrictedArea.type === "FeatureCollection") {
+      restrictedArea.features.forEach(processFeature);
+    } else if (restrictedArea.type === "Feature") {
+      processFeature(restrictedArea);
     }
   });
 
