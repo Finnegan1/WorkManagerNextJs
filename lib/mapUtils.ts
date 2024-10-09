@@ -1,7 +1,7 @@
 import { LatLngBounds, latLng, latLngBounds } from 'leaflet';
+import { FeatureCollection } from 'geojson';
 
-
-export function calculateBounds(geoJson: any): LatLngBounds {
+export function calculateBounds(geoJson: FeatureCollection): LatLngBounds {
   const bounds = latLngBounds([]);
   const addCoordinatesToBounds = (coord: number[]) => {
     console.log(coord)
@@ -18,6 +18,6 @@ export function calculateBounds(geoJson: any): LatLngBounds {
     }
   };
 
-  traverseCoordinates(geoJson.geometry.coordinates);
+  traverseCoordinates(geoJson.features[0].geometry.coordinates);
   return bounds;
 }

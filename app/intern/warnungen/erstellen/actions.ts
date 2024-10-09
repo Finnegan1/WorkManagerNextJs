@@ -21,7 +21,7 @@ export async function createArea(formData: FormData) {
     endTime: new Date(formData.get('endTime') as string),
     workDescription: formData.get('workDescription') as string,
     forestSection: formData.get('forestSection') as string,
-    trailsInArea: (formData.get('trailsInArea') as string).split(',').map(trail => trail.trim()),
+    trailsInArea: (formData.get('trailsInArea') as string).split('&,&').map(trail => trail.trim()),
     restrictionLevel: formData.get('restrictionLevel') as WorkAreaRestrictionLevel,
     restrictedAreas: JSON.parse(formData.get('restrictedAreas') as string),
     rerouting: JSON.parse(formData.get('rerouting') as string),

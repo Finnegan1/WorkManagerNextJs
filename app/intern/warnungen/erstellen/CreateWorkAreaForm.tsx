@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { formatDate } from '@/lib/utils/dateUtils'
-import { Calendar as CalendarIcon, MapPin, AlertTriangle } from "lucide-react"
+import { Calendar as CalendarIcon, MapPin, AlertTriangle, X, Plus } from "lucide-react"
 import { createArea, getForestryRanges } from './actions'
 import dynamic from 'next/dynamic'
 
@@ -38,10 +38,11 @@ export default function CreateAreaForm() {
     information: '',
     workDescription: '',
     forestSection: '',
-    trailsInArea: '',
+    trailsInArea: [] as string[],
     restrictionLevel: 'none',
     forestryRangeId: '',
   })
+  const [trailsInAreaInput, setTrailsInAreaInput] = useState('')
 
   useEffect(() => {
     const fetchForestryRanges = async () => {
@@ -55,7 +56,29 @@ export default function CreateAreaForm() {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = event.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    if (name === 'newTrailInArea') {
+      setTrailsInAreaInput(value)
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
+  }
+
+  const handleAddTrail = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (trailsInAreaInput.trim() !== '') {
+      setFormData(prev => ({
+        ...prev,
+        trailsInArea: [...prev.trailsInArea, trailsInAreaInput.trim()]
+      }))
+      setTrailsInAreaInput('')
+    }
+  }
+
+  const handleRemoveTrail = (trailToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      trailsInArea: prev.trailsInArea.filter(trail => trail !== trailToRemove)
+    }))
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -68,7 +91,7 @@ export default function CreateAreaForm() {
       case !endDate:
       case !formData.workDescription:
       case !formData.forestSection:
-      case !formData.trailsInArea:
+      case !formData.trailsInArea.length:
       case !formData.restrictionLevel:
       case !formData.forestryRangeId:
       case !rerouting:
@@ -90,7 +113,7 @@ export default function CreateAreaForm() {
     form.append('endTime', endDate ? endDate.toISOString() : '');
     form.append('workDescription', formData.workDescription);
     form.append('forestSection', formData.forestSection);
-    form.append('trailsInArea', formData.trailsInArea);
+    form.append('trailsInArea', formData.trailsInArea.join('&,&'));
     form.append('restrictionLevel', formData.restrictionLevel);
     form.append('forestryRangeId', formData.forestryRangeId);
     form.append('restrictedAreas', JSON.stringify(area));
@@ -252,7 +275,7 @@ export default function CreateAreaForm() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="forestSection">Forstabschnitt</Label>
+                  <Label htmlFor="forestSection">Waldgebiet</Label>
                   <Input 
                     id="forestSection" 
                     name="forestSection" 
@@ -262,12 +285,32 @@ export default function CreateAreaForm() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="trailsInArea">Betroffene Wege</Label>
-                  <Input 
-                    id="trailsInArea" 
-                    name="trailsInArea" 
-                    value={formData.trailsInArea}
-                    onChange={handleInputChange}
-                  />
+                  <div className="flex space-x-2">
+                    <Input 
+                      id="trailsInArea" 
+                      name="newTrailInArea" 
+                      value={trailsInAreaInput}
+                      onChange={handleInputChange}
+                      placeholder="Neuen Weg eingeben"
+                    />
+                    <Button type="button" onClick={handleAddTrail}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Hinzufügen
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.trailsInArea.map((trail, index) => (
+                      <Button
+                        key={index}
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleRemoveTrail(trail)}
+                      >
+                        {trail}
+                        <X className="w-4 h-4 ml-2" />
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>

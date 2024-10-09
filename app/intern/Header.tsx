@@ -16,11 +16,6 @@ import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
 
-// Remove these color constants
-// const colorCode = "#01543C"
-// const colorCodeHover = "#013525"
-// const colorSecondary = "#FFC91C"
-
 // Define the navigation structure
 const navigationStructure = [
   { name: 'Übersicht', href: '/intern' },

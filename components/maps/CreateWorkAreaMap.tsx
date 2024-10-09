@@ -8,7 +8,7 @@ import 'leaflet-draw/dist/leaflet.draw.css'
 import L from 'leaflet';
 import EditControlFC from './EditControlFC'
 import type { FeatureCollection } from 'geojson';
-import { calculateBounds } from './FitBounds'
+import { calculateBounds } from '@/lib/mapUtils'
 
 interface CreateWorkAreaMapProps {
   onAreaChange: (area: FeatureCollection) => void
@@ -39,9 +39,13 @@ export default function CreateWorkAreaMap({ onAreaChange, currentArea }: CreateW
   return (
     <MapContainer
       style={{ height: '100%', width: '100%', zIndex: 0 }}
-      bounds={calculateBounds([{
-        restrictedArea: JSON.stringify(currentArea)
-      }])}
+      //saxony coordinates
+      bounds={currentArea ? calculateBounds(currentArea) : [
+        [50.95, 12.05],
+        [50.95, 14.05],
+        [49.95, 14.05],
+        [49.95, 12.05]
+      ]}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <FeatureGroup ref={featureGroupRef}>
