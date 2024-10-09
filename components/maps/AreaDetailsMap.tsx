@@ -18,7 +18,7 @@ export default function AreaDetailsMap({ area, rerouting }: { area: FeatureColle
     }
 
     // Calculate bounds based on the area GeoJSON
-    const bounds = calculateBounds(area.features[0]);
+    const bounds = calculateBounds(area);
 
     return (
         <MapContainer style={{ height: '100%', width: '100%', zIndex: 0 }} bounds={bounds}>

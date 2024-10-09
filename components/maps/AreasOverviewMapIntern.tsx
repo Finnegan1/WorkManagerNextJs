@@ -6,7 +6,7 @@ import { LatLngExpression, LatLngTuple } from 'leaflet';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FitBounds } from "./FitBounds";
-
+import { GeoJsonObject } from 'geojson';
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
@@ -18,7 +18,7 @@ interface AreasOverviewMapProps {
   initialZoom?: number;
 }
 
-export default function AreasOverviewMap({ areas, initialCenter = [51.1657, 10.4515], initialZoom = 6 }: AreasOverviewMapProps) {
+export default function AreasOverviewMapIntern({ areas, initialCenter = [51.1657, 10.4515], initialZoom = 6 }: AreasOverviewMapProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function AreasOverviewMap({ areas, initialCenter = [51.1657, 10.4
       {areas.map((area) => (
         <React.Fragment key={area.id}>
           <GeoJSON
-            data={area.restrictedAreas}
+            data={area.restrictedAreas as unknown as GeoJsonObject}
             pathOptions={{
               color: 'red',
               weight: 2,
@@ -63,7 +63,7 @@ export default function AreasOverviewMap({ areas, initialCenter = [51.1657, 10.4
           </GeoJSON>
           {area.rerouting && (
             <GeoJSON
-              data={area.rerouting}
+              data={area.rerouting as unknown as GeoJsonObject}
               pathOptions={{
                 color: 'blue',
                 weight: 2,

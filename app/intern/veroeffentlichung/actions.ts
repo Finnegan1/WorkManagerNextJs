@@ -1,6 +1,5 @@
 'use server'
 
-import prisma from '@/lib/prisma'
 import { Area } from "@prisma/client";
 import StaticMaps from 'staticmaps';
 import fs from 'fs';
@@ -9,30 +8,6 @@ import { PDFDocument } from 'pdf-lib'
 import type { FeatureCollection } from 'geojson';
 import { formatDate } from '@/lib/utils/dateUtils';
 import Handlebars from 'handlebars';
-
-export async function fetchWorkAreas(startDate: Date, endDate: Date) {
-
-  console.log('Fetching work areas for date range:', startDate, endDate);
-  // all the work areas that are overlapping with the time range
-  // this means that they start before the start date and end after the end date or in the time range
-  // as well as the other overlapping options
-  return prisma.area.findMany({
-    where: {
-      OR: [
-        {
-          startTime: { lte: startDate },
-          endTime: { gte: startDate }
-        },
-        {
-          startTime: { gte: startDate, lte: endDate },
-        },
-        {
-          endTime: { gte: startDate, lte: endDate },
-        },
-      ]
-    },
-  })
-}
 
 export async function sendPDFByEmail(email: string, selectedAreaIds: number[]) {
   console.log('Sending PDF to email:', email, selectedAreaIds)

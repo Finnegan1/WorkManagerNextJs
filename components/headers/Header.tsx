@@ -15,47 +15,27 @@ import {
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 
+// Move this type definition to a separate file, e.g., 'types/navigation.ts'
+export type NavigationItem = {
+  name: string;
+  href: string;
+  children?: {
+    name: string;
+    href: string;
+    description: string;
+  }[];
+};
 
-// Define the navigation structure
-const navigationStructure = [
-  { name: 'Übersicht', href: '/intern' },
-  { name: 'Mein Profil', href: '/intern/profil' },
-  { name: 'Nutzer Administrieren', href: '/intern/admin/nutzer' },
-  { 
-    name: 'Veröffentlichung',
-    href: '/intern/veroeffentlichung',
-    children: [
-      {
-        name: 'Veröffentlichung',
-        href: '/intern/veroeffentlichung',
-        description: 'Veröffentlichung erstellen'
-      },
-      {
-        name: 'Templates',
-        href: '/intern/veroeffentlichung/templates',
-        description: 'Veröffentlichungstemplates anzeigen und verwalten'
-      }
-    ]
-  },
-  {
-    name: 'Meine Arbeitsbereiche',
-    href: '/intern/warnungen',
-    children: [
-      {
-        name: 'Arbeitsbereiche anzeigen',
-        href: '/intern/warnungen',
-        description: 'Alle Ihre Arbeitsbereiche anzeigen und verwalten'
-      },
-      {
-        name: 'Arbeitsbereich erstellen',
-        href: '/intern/warnungen/erstellen',
-        description: 'Einen neuen Arbeitsbereich erstellen'
-      }
-    ]
-  }
-]
-
-export default function Header() {
+// Update the component to accept props
+export default function Header({ 
+  navigationStructure,
+  logoText,
+  logoHref
+}: {
+  navigationStructure: NavigationItem[];
+  logoText: string;
+  logoHref: string;
+}) {
   const [isOpen, setIsOpen] = React.useState(false)
   const pathname = usePathname()
 
@@ -132,8 +112,8 @@ export default function Header() {
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Link href="/intern" className="text-xl font-bold text-secondary">
-              WorkManager
+            <Link href={logoHref} className="text-xl font-bold text-secondary">
+              {logoText}
             </Link>
           </div>
           

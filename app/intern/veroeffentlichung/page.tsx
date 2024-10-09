@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { fetchWorkAreas, generatePDF, sendPDFByEmail } from './actions'
+import { generatePDF, sendPDFByEmail } from './actions'
+import { fetchWorkAreas } from '@/app/(extern)/public_actions'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"

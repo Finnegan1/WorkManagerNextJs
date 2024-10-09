@@ -16,7 +16,7 @@ const DynamicInput = dynamic(() => import('@/components/ui/input').then(mod => m
 
 const WorkAreasPage = async () => {
     const Map = useMemo(() => dynamic(
-        () => import('@/components/maps/AreasOverviewMap'),
+        () => import('@/components/maps/AreasOverviewMapIntern'),
         {
             loading: () => <p>A map is loading</p>,
             ssr: false
@@ -39,7 +39,7 @@ const WorkAreasPage = async () => {
             <Card className="mb-4">
                 <h2 className="text-xl font-semibold m-4">Übersicht der Arbeitsbereiche</h2>
                 <div className="h-[400px] w-full">
-                    <Map areas={areas} posix={[51.505, 13.7373]} zoom={7} />
+                    <Map areas={areas} posix={[51.505, 13.7373]} zoom={7}/>
                 </div>
             </Card>
 

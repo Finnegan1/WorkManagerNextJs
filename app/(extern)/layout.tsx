@@ -1,16 +1,16 @@
-import InternHeader from '../../components/headers/InternHeader';
+import PublicHeader from "@/components/headers/PublicHeader"
 
-export default function InternalLayout({
+export default function ExternalLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <>
-      <InternHeader />
+    <div>
+      <PublicHeader />
       <main className="container mx-auto px-4 pb-8 pt-20">
         {children}
       </main>
-    </>
+    </div>
   )
 }
