@@ -1,26 +1,31 @@
 "use client"
 
-import { useState, useRef } from 'react'
-import { MapContainer, TileLayer, FeatureGroup, GeoJSON } from 'react-leaflet'
-import { EditControl } from "react-leaflet-draw"
-import 'leaflet/dist/leaflet.css'
-import 'leaflet-draw/dist/leaflet.draw.css'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { convertGPXToGeoJSON } from '@/lib/mapUtils'
-import { Upload, MapPin } from 'lucide-react'
+import { Upload, MapPin} from 'lucide-react'
 import { fetchAreas } from '../public_actions'
 import { Area } from '@prisma/client'
+import dynamic from 'next/dynamic'
+import toGeoJSON from '@mapbox/togeojson'
 
+export const convertGPXToGeoJSON = (gpxContent: string) => {
+    const parser = new DOMParser();
+    const gpxDom = parser.parseFromString(gpxContent, 'text/xml');
+    const geojson = toGeoJSON.gpx(gpxDom);
+    console.log(geojson)
+    return geojson;
+  };
+
+const MapComponent = dynamic(() => import('@/components/maps/RouteTestMap'), { ssr: false })
 
 export default function RouteChecker() {
     const [geoJson, setGeoJson] = useState<GeoJSON.FeatureCollection | null>(null)
     const [tourDate, setTourDate] = useState<Date>(new Date())
     const [areas, setAreas] = useState<Area[]>([])
     const [activeTab, setActiveTab] = useState("upload")
-    const mapRef = useRef<L.Map | null>(null)
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
@@ -30,10 +35,11 @@ export default function RouteChecker() {
         }
     }
 
-    const handleDrawCreated = (e: L.LeafletMouseEvent) => {
+    //L.LeafletMouseEvent
+    const handleDrawCreated = (e: any) => {
         const { layer } = e
         const geoJSON = layer.toGeoJSON()
-        setGeoJson(geoJSON)
+        setGeoJson(geoJSON as GeoJSON.FeatureCollection)
     }
 
     const handleCheckRoute = async () => {
@@ -71,31 +77,18 @@ export default function RouteChecker() {
                             </div>
                         </CardContent>
                     </Card>
-                    {
-                        geoJson && (
-                            <Card>
-                                <CardContent>
-                                    <div className="h-[500px]">
-                                        <MapContainer center={[51.0504, 13.7373]} zoom={8} ref={mapRef} style={{ height: '100%', width: '100%' }}>
-                                            <TileLayer
-                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                            />
-                                            <GeoJSON data={geoJson} style={{ color: 'green' }} />
-                                            {
-                                                areas.map((area) => (
-                                                    <>
-                                                        <GeoJSON data={area.restrictedAreas as unknown as GeoJSON.FeatureCollection} style={{ color: 'red' }} />
-                                                        <GeoJSON data={area.rerouting as unknown as GeoJSON.FeatureCollection} style={{ color: 'blue' }} />
-                                                    </>
-                                                ))
-                                            }
-                                        </MapContainer>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )
-                    }
+                    {geoJson && (
+                        <Card>
+                            <CardContent>
+                                <MapComponent
+                                    geoJson={geoJson}
+                                    areas={areas}
+                                    isDrawMode={false}
+                                    onDrawCreated={() => {}}
+                                />
+                            </CardContent>
+                        </Card>
+                    )}
                 </TabsContent>
                 <TabsContent value="draw">
                     <Card>
@@ -110,27 +103,12 @@ export default function RouteChecker() {
 
                     <Card className="mb-6">
                         <CardContent className="p-0">
-                            <div className="h-[500px]">
-                                <MapContainer center={[51.0504, 13.7373]} zoom={8} ref={mapRef} style={{ height: '100%', width: '100%' }}>
-                                    <TileLayer
-                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                    />
-                                    <FeatureGroup>
-                                        <EditControl
-                                            position="topright"
-                                            onCreated={handleDrawCreated}
-                                            draw={{
-                                                rectangle: false,
-                                                circle: false,
-                                                circlemarker: false,
-                                                marker: false,
-                                                polygon: false,
-                                            }}
-                                        />
-                                    </FeatureGroup>
-                                </MapContainer>
-                            </div>
+                            <MapComponent
+                                geoJson={geoJson}
+                                areas={areas}
+                                isDrawMode={true}
+                                onDrawCreated={handleDrawCreated}
+                            />
                         </CardContent>
                     </Card>
                 </TabsContent>

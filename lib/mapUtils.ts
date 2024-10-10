@@ -1,6 +1,5 @@
 import { LatLngBounds, latLng, latLngBounds } from 'leaflet';
 import { FeatureCollection } from 'geojson';
-import * as toGeoJSON from '@mapbox/togeojson';
 
 export function calculateBounds(geoJson: FeatureCollection): LatLngBounds {
   const bounds = latLngBounds([]);
@@ -24,10 +23,3 @@ export function calculateBounds(geoJson: FeatureCollection): LatLngBounds {
 }
 
 
-export const convertGPXToGeoJSON = (gpxContent: string) => {
-  const parser = new DOMParser();
-  const gpxDom = parser.parseFromString(gpxContent, 'text/xml');
-  const geojson = toGeoJSON.gpx(gpxDom);
-  console.log(geojson)
-  return geojson;
-};
