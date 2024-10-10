@@ -2,8 +2,7 @@
 
 import prisma from "@/lib/prisma";
 
-export async function fetchWorkAreas(startDate: Date, endDate: Date) {
-
+export async function fetchAreas(startDate: Date, endDate: Date) {
   console.log('Fetching work areas for date range:', startDate, endDate);
   return prisma.area.findMany({
     where: {

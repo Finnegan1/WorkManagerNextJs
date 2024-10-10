@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import dynamic from 'next/dynamic';
 import { Area } from "@prisma/client";
 import { formatDate } from "@/lib/utils/dateUtils";
-import { fetchWorkAreas } from "./public_actions";
+import { fetchAreas } from "./public_actions";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -25,7 +25,7 @@ export default function Home() {
 
   const handleFetchAreas = async () => {
     if (startDate && endDate) {
-      const fetchedAreas = await fetchWorkAreas(
+      const fetchedAreas = await fetchAreas(
         new Date((new Date(startDate + 'T00:00:00').toLocaleString('en-US', { timeZone: 'Europe/Berlin' }))),
         new Date((new Date(endDate + 'T23:59:59').toLocaleString('en-US', { timeZone: 'Europe/Berlin' })))
       );

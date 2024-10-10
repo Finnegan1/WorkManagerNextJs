@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { generatePDF, sendPDFByEmail } from './actions'
-import { fetchWorkAreas } from '@/app/(extern)/public_actions'
+import { fetchAreas } from '@/app/(extern)/public_actions'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -29,7 +29,7 @@ export default function PublishPage() {
 
   const handleFetchAreas = async () => {
     if (startDate && endDate) {
-      const fetchedAreas = await fetchWorkAreas(
+      const fetchedAreas = await fetchAreas(
         new Date( (new Date(startDate + 'T00:00:00').toLocaleString('en-US', { timeZone: 'Europe/Berlin' }) )), 
         new Date( (new Date(endDate + 'T23:59:59').toLocaleString('en-US', { timeZone: 'Europe/Berlin' })) )
       )

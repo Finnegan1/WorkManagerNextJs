@@ -1,11 +1,8 @@
 import Header from '@/components/headers/Header'
 
 const publicNavigationStructure = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Services', href: '/services' },
-  { name: 'Contact', href: '/contact' },
-  // Add more items as needed
+  { name: 'Übersicht', href: '/' },
+  { name: 'Überprüfe Route', href: '/route-test' },
 ]
 
 export default function PublicHeader() {
