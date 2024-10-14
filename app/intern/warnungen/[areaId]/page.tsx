@@ -8,10 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { CalendarIcon, AlertTriangleIcon, ClockIcon, FileTextIcon, ArrowRightIcon, MapPinIcon, TreePineIcon } from 'lucide-react'
 import { DeleteAlertDialog } from './DeleteAreaDialog'
 import { FeatureCollection } from 'geojson'
+import { JsonDiffViewer } from '@/components/JsonDiffViewer'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 
 const AreaMap = dynamic(() => import('@/components/maps/AreaDetailsMap'), {
   loading: () => <Skeleton className="h-[600px] w-full" />,
@@ -51,6 +52,7 @@ export default async function AreaDetail({ params }: { params: { areaId: string 
         return <Badge variant="secondary">{level}</Badge>
     }
   }
+
 
   return (
     <div className="container mx-auto px-4 pb-8 pt-0 max-w-7xl">
@@ -168,27 +170,27 @@ export default async function AreaDetail({ params }: { params: { areaId: string 
               <CardTitle>Änderungsverlauf</CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[400px] w-full">
-                <ul className="space-y-4">
-                  {area.changeLogs.map(log => (
-                    <li key={log.id} className="flex items-start space-x-4 border-b pb-4">
-                      <ClockIcon className="h-5 w-5 text-muted-foreground mt-1" />
-                      <div>
-                        <p className="font-semibold">{log.changeType} von {log.changedBy.name}</p>
-                        <p className="text-sm text-muted-foreground">{formatDate(log.createdAt)}</p>
-                        <div className="mt-2">
-                          <p className="text-sm font-medium">Vorherige Werte:</p>
-                          <pre className="text-xs bg-muted p-2 rounded mt-1">{JSON.stringify(log.previousValues, null, 2)}</pre>
-                        </div>
-                        <div className="mt-2">
-                          <p className="text-sm font-medium">Neue Werte:</p>
-                          <pre className="text-xs bg-muted p-2 rounded mt-1">{JSON.stringify(log.newValues, null, 2)}</pre>
+              <Accordion type="single" collapsible className="w-full">
+                {area.changeLogs.map((log, index) => (
+                  <AccordionItem key={log.id} value={`item-${index}`}>
+                    <AccordionTrigger>
+                      <div className="flex items-center space-x-4 text-left">
+                        <ClockIcon className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                          <p className="font-semibold">{log.changeType} von {log.changedBy.name}</p>
+                          <p className="text-sm text-muted-foreground">{formatDate(log.createdAt)}</p>
                         </div>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              </ScrollArea>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <JsonDiffViewer 
+                        left={log.previousValues as Record<string, any>} 
+                        right={log.newValues as Record<string, any>} 
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </CardContent>
           </Card>
         </TabsContent>

@@ -10,12 +10,12 @@ import EditControlFC from './EditControlFC'
 import type { FeatureCollection } from 'geojson';
 import { calculateBounds } from '@/lib/mapUtils'
 
-interface CreateWorkAreaMapProps {
+interface FormRestrictedAreaMapProps {
   onAreaChange: (area: FeatureCollection) => void
   currentArea: FeatureCollection
 }
 
-export default function CreateWorkAreaMap({ onAreaChange, currentArea }: CreateWorkAreaMapProps) {
+export default function FormRestrictedAreaMap({ onAreaChange, currentArea }: FormRestrictedAreaMapProps) {
   const featureGroupRef = useRef<LeafletFeatureGroup | null>(null)
 
   useEffect(() => {

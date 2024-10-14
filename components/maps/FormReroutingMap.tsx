@@ -10,13 +10,13 @@ import EditControlFC from './EditControlFC'
 import type { FeatureCollection } from 'geojson';
 import { calculateBounds } from '@/lib/mapUtils'
 
-interface CreateReroutingMapProps {
+interface FormReroutingMapProps {
     currentArea: FeatureCollection
     currentRerouting: FeatureCollection
     onReroutingChange: (rerouting: FeatureCollection) => void
 }
 
-export default function CreateReroutingMap({ currentArea, currentRerouting, onReroutingChange }: CreateReroutingMapProps) {
+export default function FormReroutingMap({ currentArea, currentRerouting, onReroutingChange }: FormReroutingMapProps) {
     const featureGroupRef = useRef<LeafletFeatureGroup | null>(null)
 
     useEffect(() => {

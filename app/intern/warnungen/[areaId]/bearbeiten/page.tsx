@@ -1,22 +1,24 @@
-import EditAreaForm from './EditAreaForm';
 import prisma from '@/lib/prisma';
+import EditWorkAreaForm from './EditAreaForm';
 
-export default async function EditWorkArea({ params }: { params: { workAreaId: string } }) {
-  const workAreaId = parseInt(params.workAreaId);
-  const workArea = await prisma.workArea.findUnique({
+export default async function EditWorkArea({ params }: { params: { areaId: string } }) {
+  const areaId = parseInt(params.areaId);
+  const area = await prisma.area.findUnique({
     where: {
-      id: workAreaId,
+      id: areaId,
     },
   });
 
-  if (!workArea) {
-    return <div>Work area not found</div>;
+  if (!area) {
+    return <div>Area not found</div>;
   }
+
+  const forestryRanges = await prisma.forestryRange.findMany();
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <h1 className="text-3xl font-bold mb-6">Edit Work Area</h1>
-      <EditAreaForm workArea={workArea} />
+      <h1 className="text-3xl font-bold mb-6">Arbeitsbereich bearbeiten</h1>
+      <EditWorkAreaForm area={area} forestryRanges={forestryRanges} />
     </div>
   );
 }

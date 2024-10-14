@@ -50,9 +50,6 @@ const WorkAreasPage = async () => {
             </Link>
 
 
-            {areas.length === 0 ? (
-                <p className="text-red-500">Keine Arbeitsbereiche gefunden</p>
-            ) : (
                 <>
                     <DynamicInput placeholder="Type a keyword..." className="mb-4" />
                     <Table className="min-w-full bg-white">
@@ -78,7 +75,6 @@ const WorkAreasPage = async () => {
                         </TableBody>
                     </Table>
                 </>
-            )}
         </div>
     );
 };
