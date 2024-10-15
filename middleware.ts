@@ -1,5 +1,5 @@
 import { withAuth } from "next-auth/middleware"
-import prisma from "./lib/prisma"
+import { NextResponse } from "next/server"
 
 export const config = {
     matcher: [
@@ -8,18 +8,30 @@ export const config = {
     ],
 }
 
-
+const adminRoutes = '/intern/admin'
+const publisherRoutes = '/intern/veroeffentlichung'
 
 export default withAuth(
-    // `withAuth` augments your `Request` with the user's token.
     function middleware(req) {
-        console.log("middleware")
-        console.log(req.nextauth.token)
+        switch (req.nextauth.token?.user.role) {
+            case 'ADMIN':
+                break
+            case 'PUBLISHER':
+                if (req.nextUrl.pathname.startsWith(adminRoutes)) {
+                    return NextResponse.redirect(new URL("/intern/", req.url))
+                }
+                break
+            case 'USER':
+                if (req.nextUrl.pathname.startsWith(adminRoutes) || req.nextUrl.pathname.startsWith(publisherRoutes)) {
+                    return NextResponse.redirect(new URL("/intern/", req.url))
+                }
+                break
+        }
+        return NextResponse.next()
     },
     {
       callbacks: {
         authorized: async ({ token }) => {
-            console.log(process.env.NEXTAUTH_SECRET)
             if (!token?.email) {
                 return false
             }
