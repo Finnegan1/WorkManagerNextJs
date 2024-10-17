@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
-import prisma from "@/lib/prisma";
-import { createAdminUser } from "@/zscript_create_user";
 import type { Viewport } from 'next'
 import { Toaster } from "@/components/ui/toaster";
 
@@ -36,17 +34,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  //check if admin user exists
-  const adminUser = await prisma.user.findUnique({
-    where: {
-      email: 'admin@admin.de',
-    },
-  });
-  
-  if (!adminUser) {
-    await createAdminUser()
-  }
 
   return (
     <html lang="en">

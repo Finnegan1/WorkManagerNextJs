@@ -5,33 +5,67 @@ services:
     image: nextjs-app  # This is the image of your Next.js app
     build: .
     ports:
-      - "3000:3000"  # Expose the Next.js app on port 3000
-    volumes:
-      - .:/app  # Mount the current directory for live code updates (optional)
-      - /app/node_modules  # Exclude node_modules from being overwritten
+      - "3002:3000"  # Expose the Next.js app on port 3000
+    networks:
+      - workmanager-network
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/workmanager  # Connection string to PostgreSQL
       EMAIL_USER: workmanager.uni@gmail.com
       EMAIL_PASS: asja ychq uvmg vsdp
-      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_URL: http://localhost:3002
       NEXTAUTH_SECRET: wf0qPHVDOYuXOmZrb8TJj2mW7ff7N3YsNxNQrP2DZl44
       NEXTAUTH_SALT: 10
-      GOTENBERG_URL: https://gotenberg.finnegan.dev
+      GOTENBERG_URL: http://gotenberg:3001
       TEMPLATES_GITHUB_REPO: https://github.com/Finnegan1/WorkManagerPDFTemplates.git
+    env_file:
+      - .env
     depends_on:
-      - db  # Ensure PostgreSQL service starts before the Next.js app
-    command: npm run dev  # Start the app in development mode (change to `npm start` for production)
+      - db
+    command: >
+      sh -c "
+        npx prisma migrate reset -f &&
+        npx ts-node -P tsconfig-seed.json prisma/seed.ts &&
+        node server.js
+      "
 
   # Define the PostgreSQL database
   db:
     image: postgres:15-alpine  # Use the official PostgreSQL image
+    ports:
+      - "5432:5432"
+    networks:
+      - workmanager-network
     volumes:
       - postgres-data:/var/lib/postgresql/data  # Persist PostgreSQL data
     environment:
       POSTGRES_USER: postgres  # Set the default user
       POSTGRES_PASSWORD: password  # Set the default password
       POSTGRES_DB: workmanager  # Set the default database name
+  
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    ports:
+      - "3001:3000"
+    networks:
+      - workmanager-network
+
+  # Add pgAdmin service
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@workmanager.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    ports:
+      - "5050:80"
+    networks:
+      - workmanager-network
+    depends_on:
+      - db
 
 # Define volumes to persist database data
 volumes:
   postgres-data:
+
+networks:
+  workmanager-network:
+    driver: bridge
