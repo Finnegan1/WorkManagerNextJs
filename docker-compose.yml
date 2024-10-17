@@ -23,6 +23,7 @@ services:
       - db
     command: >
       sh -c "
+        npm install ts-node typescript &&
         npx prisma migrate reset -f &&
         npx ts-node -P tsconfig-seed.json prisma/seed.ts &&
         node server.js
