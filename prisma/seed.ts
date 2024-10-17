@@ -15,6 +15,7 @@ async function main() {
         email: 'admin@admin.de',
         name: 'admin',
         password: hashedPassword,
+        role: 'ADMIN',
       },
     })
 
