@@ -9,7 +9,7 @@ services:
     networks:
       - workmanager-network
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5433/workmanager  # Connection string to PostgreSQL
+      DATABASE_URL: postgresql://postgres:password@db:5432/workmanager  # Connection string to PostgreSQL
       EMAIL_USER: workmanager.uni@gmail.com
       EMAIL_PASS: asja ychq uvmg vsdp
       NEXTAUTH_URL: http://localhost:3002
@@ -32,8 +32,6 @@ services:
   # Define the PostgreSQL database
   db:
     image: postgres:15-alpine  # Use the official PostgreSQL image
-    ports:
-      - "5433:5432"
     networks:
       - workmanager-network
     volumes:
