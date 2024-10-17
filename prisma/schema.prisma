@@ -178,13 +178,13 @@ model Area {
 
   createdBy User @relation("CreatedAreas", fields: [createdById], references: [id])
   createdById String
-  changeLogs AreaChangeLog[]
+  changeLogs AreaChangeLog[] @relation("AreaChangeLogs")
 }
 
 model AreaChangeLog {
   id              Int        @id @default(autoincrement())
-  areaId      Int
-  area        Area   @relation(fields: [areaId], references: [id])
+  areaId          Int
+  area            Area       @relation("AreaChangeLogs", fields: [areaId], references: [id], onDelete: Cascade)
   changedById     String
   changedBy       User       @relation("ChangedAreas", fields: [changedById], references: [id])
   changeType      ChangeType

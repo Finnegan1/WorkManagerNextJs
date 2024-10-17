@@ -22,7 +22,8 @@ export default withAuth(
                 }
                 break
             case 'USER':
-                if (req.nextUrl.pathname.startsWith(adminRoutes) || req.nextUrl.pathname.startsWith(publisherRoutes)) {
+                if (req.nextUrl.pathname.startsWith(adminRoutes) || req.nextUrl.pathname
+                    .startsWith(publisherRoutes)) {
                     return NextResponse.redirect(new URL("/intern/", req.url))
                 }
                 break
@@ -30,17 +31,17 @@ export default withAuth(
         return NextResponse.next()
     },
     {
-      callbacks: {
-        authorized: async ({ token }) => {
-            if (!token?.email) {
-                return false
-            }
-            if (token.exp < Date.now() / 1000) {
-                return false
-            }
-            return true
+        callbacks: {
+            authorized: async ({ token }) => {
+                if (!token?.user.id) {
+                    return false
+                }
+                if (token.exp < Date.now() / 1000) {
+                    return false
+                }
+                return true
+            },
         },
-      },
     },
-  )
-  
+)
+

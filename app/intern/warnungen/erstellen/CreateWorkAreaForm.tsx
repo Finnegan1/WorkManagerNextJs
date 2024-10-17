@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { useToast } from "@/hooks/use-toast"
 import { createArea, getForestryRanges } from './actions'
 import AreaForm from '@/components/forms/AreaForm'
+import { useRouter } from 'next/navigation'
 
 export default function CreateAreaForm() {
   const [forestryRanges, setForestryRanges] = useState<any>([])
   const { toast } = useToast()
+  const router = useRouter()
 
   useEffect(() => {
     const fetchForestryRanges = async () => {
@@ -21,12 +23,20 @@ export default function CreateAreaForm() {
     formData.append('createdById', 'YOUR_USER_ID');
 
     const result = await createArea(formData);
-    console.log(result);
     
-    toast({
-      title: 'Bereich erfolgreich erstellt',
-      description: 'Der neue Arbeitsbereich wurde erfolgreich angelegt.',
-    })
+    if (result.error) {
+      toast({
+        title: 'Fehler',
+        description: result.error,
+        variant: 'destructive',
+      })
+    } else if (result.success) {
+      toast({
+        title: 'Bereich erfolgreich erstellt',
+        description: 'Der neue Arbeitsbereich wurde erfolgreich angelegt.',
+      })
+      router.push(`/intern/warnungen/${result.id}`)
+    }
   };
 
   return (
