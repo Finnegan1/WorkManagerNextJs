@@ -5,18 +5,18 @@ services:
     image: nextjs-app  # This is the image of your Next.js app
     build: .
     ports:
-      - "3002:3000"  # Expose the Next.js app on port 3000
+      - "${NEXT_PORT}:3000"  # Expose the Next.js app on port 3000
     networks:
       - workmanager-network
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/workmanager  # Connection string to PostgreSQL
-      EMAIL_USER: workmanager.uni@gmail.com
-      EMAIL_PASS: asja ychq uvmg vsdp
-      NEXTAUTH_URL: http://localhost:3002
-      NEXTAUTH_SECRET: wf0qPHVDOYuXOmZrb8TJj2mW7ff7N3YsNxNQrP2DZl44
-      NEXTAUTH_SALT: 10
-      GOTENBERG_URL: http://gotenberg:3000
-      TEMPLATES_GITHUB_REPO: https://github.com/Finnegan1/WorkManagerPDFTemplates.git
+      DATABASE_URL: ${DATABASE_URL}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_SALT: ${NEXTAUTH_SALT}
+      GOTENBERG_URL: ${GOTENBERG_URL}
+      TEMPLATES_GITHUB_REPO: ${TEMPLATES_GITHUB_REPO}
     env_file:
       - .env
     depends_on:
@@ -37,9 +37,9 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data  # Persist PostgreSQL data
     environment:
-      POSTGRES_USER: postgres  # Set the default user
-      POSTGRES_PASSWORD: password  # Set the default password
-      POSTGRES_DB: workmanager  # Set the default database name
+      POSTGRES_USER: ${POSTGRES_USER}  # Set the default user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Set the default password
+      POSTGRES_DB: ${POSTGRES_DB}  # Set the default database name
   
   gotenberg:
     image: gotenberg/gotenberg:8
@@ -50,8 +50,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@workmanager.com
-      PGADMIN_DEFAULT_PASSWORD: adminpassword
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "5050:80"
     networks:
