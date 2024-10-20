@@ -1,11 +1,11 @@
 version: '3'
 services:
-  # Define the Next.js application
+  # Next.js application
   web:
-    image: nextjs-app  # This is the image of your Next.js app
+    image: nextjs-app 
     build: .
     ports:
-      - "${NEXT_PORT}:3000"  # Expose the Next.js app on port 3000
+      - "${NEXT_PORT}:3000"
     networks:
       - workmanager-network
     environment:
@@ -29,24 +29,24 @@ services:
         node server.js
       "
 
-  # Define the PostgreSQL database
+  # PostgreSQL database
   db:
-    image: postgres:15-alpine  # Use the official PostgreSQL image
+    image: postgres:15-alpine
     networks:
       - workmanager-network
     volumes:
       - postgres-data:/var/lib/postgresql/data  # Persist PostgreSQL data
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}  # Set the default user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Set the default password
-      POSTGRES_DB: ${POSTGRES_DB}  # Set the default database name
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
   
   gotenberg:
     image: gotenberg/gotenberg:8
     networks:
       - workmanager-network
 
-  # Add pgAdmin service
+  # pgAdmin
   pgadmin:
     image: dpage/pgadmin4
     environment:
@@ -59,7 +59,7 @@ services:
     depends_on:
       - db
 
-# Define volumes to persist database data
+# volumes to persist database data
 volumes:
   postgres-data:
 

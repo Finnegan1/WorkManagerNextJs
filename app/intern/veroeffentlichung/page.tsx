@@ -102,7 +102,6 @@ export default function PublishPage() {
             <TableRow>
               <TableHead className="w-[50px]">Auswählen</TableHead>
               <TableHead>Kurzbeschreibung</TableHead>
-              <TableHead>Typ</TableHead>
               <TableHead>Einschränkungsstufe</TableHead>
               <TableHead>Startzeit</TableHead>
               <TableHead>Endzeit</TableHead>
@@ -119,7 +118,6 @@ export default function PublishPage() {
                   />
                 </TableCell>
                 <TableCell className="font-medium">{area.shortDescription}</TableCell>
-                <TableCell>{area.shortDescription}</TableCell>
                 <TableCell>{area.restrictionLevel}</TableCell>
                 <TableCell>{formatDate(area.startTime)}</TableCell>
                 <TableCell>{formatDate(area.endTime)}</TableCell>
