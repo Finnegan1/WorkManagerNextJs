@@ -69,7 +69,6 @@ export function FitBounds({ areas }: { areas: PartialArea[] }) {
 
 
 export function calculateBounds(areas: PartialArea[]) {
-  console.log("areas", areas[0].restrictedArea);
   if (areas.length === 0 || areas[0].restrictedArea === null) {
     return new LatLngBounds([[50.65, 12.3], [51.65, 13.3]]);
   }
@@ -77,16 +76,11 @@ export function calculateBounds(areas: PartialArea[]) {
   const bounds = new LatLngBounds([]);
 
   areas.forEach((area) => {
-    const restrictedArea = area.restrictedArea as any as FeatureCollection;
-    console.log("Parsed GeoJSON Area:", restrictedArea);
-
+    const restrictedArea = area.restrictedArea as any as GeoJSON.FeatureCollection;
     const processFeature = (feature: Feature) => {
-      console.log("Feature Geometry Type:", feature.geometry.type);
-
       if (feature.geometry.type === "Polygon") {
         feature.geometry.coordinates.forEach((polygon: number[][]) => {
           polygon.forEach((coord: number[]) => {
-            console.log("Polygon Coordinate:", coord);
             bounds.extend(new LatLng(coord[1], coord[0]));
           });
         });
@@ -94,14 +88,12 @@ export function calculateBounds(areas: PartialArea[]) {
         feature.geometry.coordinates.forEach((multiPolygon: number[][][]) => {
           multiPolygon.forEach((polygon: number[][]) => {
             polygon.forEach((coord: number[]) => {
-              console.log("MultiPolygon Coordinate:", coord);
               bounds.extend(new LatLng(coord[1], coord[0]));
             });
           });
         });
       } else if (feature.geometry.type === "LineString") {
         feature.geometry.coordinates.forEach((coord: number[]) => {
-          console.log("LineString Coordinate:", coord);
           bounds.extend(new LatLng(coord[1], coord[0]));
         });
       }

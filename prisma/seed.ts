@@ -82,7 +82,7 @@ async function main() {
           forestSection: 'Abteilung 42, 43, 44',
           trailsInArea: ['Wanderweg Tharandt-Grillenburg', 'Fahrradweg R4'],
           restrictionLevel: WorkAreaRestrictionLevel.danger,
-          restrictedAreas: JSON.stringify({
+          restrictedAreas: {
             "type": "FeatureCollection",
             "features": [
               {
@@ -141,8 +141,8 @@ async function main() {
                 }
               }
             ]
-          }),
-          rerouting: JSON.stringify({
+          },
+          rerouting: {
             "type": "FeatureCollection",
             "features": [
               {
@@ -285,7 +285,7 @@ async function main() {
                 }
               }
             ]
-          }),
+          },
           forestryRangeId: forestryRanges.find((forestryRange) => forestryRange.name === 'Dresden')!.id,
           createdById: user.id,
         },
@@ -298,7 +298,7 @@ async function main() {
           forestSection: 'Sektor B3, B4',
           trailsInArea: ['Malerweg Etappe 7', 'Forststeig Elbsandstein'],
           restrictionLevel: WorkAreaRestrictionLevel.attention,
-          restrictedAreas: JSON.stringify({
+          restrictedAreas: {
             "type": "FeatureCollection",
             "features": [
               {
@@ -378,8 +378,8 @@ async function main() {
                 "id": 0
               }
             ]
-          }),
-          rerouting: JSON.stringify({
+          },
+          rerouting: {
             "type": "FeatureCollection",
             "features": [
               {
@@ -452,7 +452,7 @@ async function main() {
                 }
               }
             ]
-          }),
+          },
           forestryRangeId: forestryRanges.find((forestryRange) => forestryRange.name === 'Bad Schandau')!.id,
           createdById: user.id,
         },
@@ -465,7 +465,7 @@ async function main() {
           forestSection: 'Abteilung 17, 18',
           trailsInArea: ['Muldentalradweg'],
           restrictionLevel: WorkAreaRestrictionLevel.none,
-          restrictedAreas: JSON.stringify({
+          restrictedAreas: {
             "type": "FeatureCollection",
             "features": [
               {
@@ -628,8 +628,8 @@ async function main() {
                 }
               }
             ]
-          }),
-          rerouting: JSON.stringify({
+          },
+          rerouting: {
             "type": "FeatureCollection",
             "features": [
               {
@@ -750,7 +750,7 @@ async function main() {
                 }
               }
             ]
-          }),
+          },
           forestryRangeId: forestryRanges.find((forestryRange) => forestryRange.name === 'Grimma')!.id,
           createdById: user.id,
         },
