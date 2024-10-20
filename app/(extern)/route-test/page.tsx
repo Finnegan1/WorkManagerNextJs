@@ -10,7 +10,7 @@ import { fetchAreas } from '../public_actions'
 import { Area } from '@prisma/client'
 import dynamic from 'next/dynamic'
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import turf from '@turf/turf'
+import * as turf from "@turf/turf";
 import toGeoJSON from '@mapbox/togeojson'
 
 // Check if the tour intersects or lies within the GeoJSON features

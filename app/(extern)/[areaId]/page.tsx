@@ -16,8 +16,9 @@ const AreaMap = dynamic(() => import('@/components/maps/AreaDetailsMap'), {
 
 export default async function AreaDetail({ params }: { params: { areaId: string } }) {
   const areaId = parseInt(params.areaId)
+  console.log(areaId)
   const area = await prisma.area.findUnique({
-    where: { id: areaId },
+    where: { id: Number(areaId) },
     include: {
       forestryRange: true,
     }
