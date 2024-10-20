@@ -39,7 +39,7 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Willkommen bei dem Arbeits-Tracker des Sachsenforst</h1>
+      <h1 className="text-2xl font-bold mb-4">Willkommen bei dem Arbeits-Tracker des S. Forst</h1>
       <p className="mb-4">Hier können Sie Informationen zu laufenden Arbeiten und Einschränkungen in den Wäldern finden.</p>
       
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">

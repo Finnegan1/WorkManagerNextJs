@@ -9,14 +9,14 @@ export default function ImpressumPage() {
         </CardHeader>
         <CardContent>
           <h2 className="text-xl font-semibold mb-4">I. Herausgeber</h2>
-          <h3 className="text-lg font-semibold mt-4 mb-2">ExampleCompany</h3>
+          <h3 className="text-lg font-semibold mt-4 mb-2">S. Forst</h3>
           <p>vertreten durch:</p>
           
-          <h3 className="text-lg font-semibold mt-4 mb-2">ExampleCompany Abteilung</h3>
+          <h3 className="text-lg font-semibold mt-4 mb-2">S. Forst Abteilung</h3>
           <p><strong>Verantwortlich gemäß § 18 Abs. 2 MStV für die Inhalte mit Herausgeberkennzeichnung:</strong></p>
           <p>Max Mustermann, Pressesprecher</p>
 
-          <h3 className="text-lg font-semibold mt-4 mb-2">ExampleCompany Abteilung (ECA)</h3>
+          <h3 className="text-lg font-semibold mt-4 mb-2">S. Forst Abteilung (SFA)</h3>
           <p>Besucheradresse:<br />
           Musterstraße 123<br />
           12345 Musterstadt<br />
@@ -38,7 +38,7 @@ export default function ImpressumPage() {
           <p>Die Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
 
           <h2 className="text-xl font-semibold mt-6 mb-4">III. Hinweis zur Finanzierung des Internetauftrittes</h2>
-          <p>Dieser Internetauftritt wird durch ExampleCompany finanziert.</p>
+          <p>Dieser Internetauftritt wird durch S. Forst finanziert.</p>
         </CardContent>
       </Card>
     </div>

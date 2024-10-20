@@ -10,7 +10,7 @@ export default function PublicHeader() {
   return (
     <Header 
       navigationStructure={publicNavigationStructure}
-      logoText="PublicSite"
+      logoText="S. Forst"
       logoHref="/"
     />
   )
