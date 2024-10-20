@@ -28,7 +28,7 @@ export default function RouteChecker() {
     const [tourDate, setTourDate] = useState<Date>(new Date())
     const [areas, setAreas] = useState<Area[]>([])
     const [activeTab, setActiveTab] = useState("upload")
-    const [intersectionFound, setIntersectionFound] = useState(false)
+    const [intersectionFound, setIntersectionFound] = useState<boolean | null>(null)
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
@@ -90,14 +90,21 @@ export default function RouteChecker() {
                     </Card>
                     {geoJson && (
                         <Card>
-                            <CardContent>
-                                {intersectionFound && (
-                                    <Alert>
+                            <CardContent className='p-6 flex flex-col gap-4'>
+                                {intersectionFound !== null && (
+                                    intersectionFound ? (
+                                        <Alert variant="destructive">
                                         <AlertCircle className="w-4 h-4" />
-                                        <AlertTitle>Intersection found</AlertTitle>
-                                        <AlertDescription>Die Route schneidet sich mit den folgenden Bereichen:</AlertDescription>
+                                        <AlertTitle>Überschneidungen gefunden</AlertTitle>
+                                        <AlertDescription>Die Route schneidet sich mit den folgenden Arbeitsbereichen:</AlertDescription>
                                     </Alert>
-                                )}
+                                ) : (
+                                    <Alert variant="default">
+                                        <AlertCircle className="w-4 h-4" />
+                                        <AlertTitle>Keine Überschneidungen gefunden</AlertTitle>
+                                        <AlertDescription>Die Route schneidet sich mit keinem der Arbeitsbereiche</AlertDescription>
+                                    </Alert>
+                                ))}
                                 <MapComponent
                                     geoJson={geoJson}
                                     areas={areas}
@@ -120,14 +127,21 @@ export default function RouteChecker() {
                     </Card>
 
                     <Card className="mb-6">
-                        <CardContent className="p-0">
-                            {intersectionFound && (
-                                <Alert>
-                                    <AlertCircle className="w-4 h-4" />
-                                    <AlertTitle>Intersection found</AlertTitle>
-                                    <AlertDescription>Die Route schneidet sich mit den folgenden Bereichen:</AlertDescription>
+                        <CardContent className="p-6">
+                            {intersectionFound !== null && (
+                                intersectionFound ? (
+                                    <Alert variant="destructive">
+                                        <AlertCircle className="w-4 h-4" />
+                                    <AlertTitle>Überschneidungen gefunden</AlertTitle>
+                                    <AlertDescription>Die Route schneidet sich mit den folgenden Arbeitsbereichen:</AlertDescription>
                                 </Alert>
-                            )}
+                            ) : (
+                                <Alert variant="default">
+                                    <AlertCircle className="w-4 h-4" />
+                                    <AlertTitle>Keine Überschneidungen gefunden</AlertTitle>
+                                    <AlertDescription>Die Route schneidet sich mit keinem der Arbeitsbereiche</AlertDescription>
+                                </Alert>
+                            ))}
                             <MapComponent
                                 geoJson={geoJson}
                                 areas={areas}
