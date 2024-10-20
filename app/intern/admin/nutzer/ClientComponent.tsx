@@ -28,6 +28,7 @@ const ClientComponent = (
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        console.log(email, role)
         const formData = new FormData(e.currentTarget)
         const response = await CreateUser(formData)
         console.log(response)

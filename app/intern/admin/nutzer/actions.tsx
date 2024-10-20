@@ -23,7 +23,8 @@ export async function CreateUser(formData: FormData) {
         }
     })
 
-    await sendAccountCreatedEmail(email, password)
+    const result = await sendAccountCreatedEmail(email, password)
+    console.log(result)
 
     return {
         id: user.id,

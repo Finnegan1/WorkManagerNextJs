@@ -1,6 +1,6 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { SentMessageInfo } from 'nodemailer';
 
-export const sendAccountCreatedEmail = async (email: string, password: string) => {
+export const sendAccountCreatedEmail = async (email: string, password: string) : Promise<SentMessageInfo> => {
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
@@ -16,5 +16,7 @@ export const sendAccountCreatedEmail = async (email: string, password: string) =
     text: `Your new account is created.\n\nYour password is: ${password}\nPlease change your password after logging in as soon as possible.`
   };
 
-  await transporter.sendMail(mailOptions);
+  const result = await transporter.sendMail(mailOptions);
+  console.log(result)
+  return result
 };

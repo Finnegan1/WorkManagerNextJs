@@ -10,8 +10,8 @@ import { fetchAreas } from '../public_actions'
 import { Area } from '@prisma/client'
 import dynamic from 'next/dynamic'
 import toGeoJSON from '@mapbox/togeojson'
-import turf from '@turf/turf'
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { checkTourWithinGeoJson } from '@/lib/mapUtils'
 
 export const convertGPXToGeoJSON = (gpxContent: string) => {
     const parser = new DOMParser();
@@ -29,6 +29,7 @@ export default function RouteChecker() {
     const [areas, setAreas] = useState<Area[]>([])
     const [activeTab, setActiveTab] = useState("upload")
     const [intersectionFound, setIntersectionFound] = useState<boolean | null>(null)
+    const [error, setError] = useState<string | null>(null)
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
@@ -49,12 +50,18 @@ export default function RouteChecker() {
         console.log(geoJson)
         if (geoJson && tourDate) {
             const response = await fetchAreas(tourDate, tourDate)
-            //check if any of the areas are intersected by the route
-            const intersectedAreas = response.filter((area) => {
-                const areaGeoJSON = (area.restrictedAreas as any as GeoJSON.FeatureCollection).features[0]
-                const routeFeature = (geoJson as GeoJSON.FeatureCollection).features[0]
-                return turf.booleanIntersects(routeFeature, areaGeoJSON)
-            })
+            const intersectedAreas: Area[] = []
+            for (const area of response) {
+                try {
+                    const isTourIntersecting = checkTourWithinGeoJson(geoJson, area.restrictedAreas as any as GeoJSON.FeatureCollection);
+                    console.log(area.shortDescription, isTourIntersecting)
+                    if (isTourIntersecting) {
+                        intersectedAreas.push(area)
+                    }
+                } catch (error) {
+                    setError("Fehler beim Überprüfen der Route. Bitte versuchen Sie es erneut.")
+                }
+            }
             setAreas(intersectedAreas)
             setIntersectionFound(intersectedAreas.length > 0)
         }
@@ -63,6 +70,14 @@ export default function RouteChecker() {
     return (
         <div className="container mx-auto p-4 max-w-6xl">
             <h1 className="text-4xl font-bold mb-6 text-center">Routenprüfer</h1>
+
+            {error && (
+                <Alert variant="destructive">
+                    <AlertCircle className="w-4 h-4" />
+                    <AlertTitle>Fehler</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
                 <TabsList className="grid w-full grid-cols-2">
