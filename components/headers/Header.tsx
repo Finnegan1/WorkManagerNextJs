@@ -63,7 +63,7 @@ export default function Header({
             <NavigationMenuTrigger className={cn(
               navItemStyles,
               "flex items-center justify-start px-4 py-2 rounded-md bg-primary",
-              isActive(item.href) && `bg-accent`,
+              isActive(item.href) && `bg-accent text-accent-foreground`,
               isMobile && "w-full"
             )}>
               {item.name}
@@ -93,7 +93,7 @@ export default function Header({
                 className={cn(
                   navItemStyles,
                   "flex items-center justify-start px-4 py-2 rounded-md",
-                  isActive(item.href) && `bg-accent`,
+                  isActive(item.href) && `bg-accent text-accent-foreground`,
                   isMobile && "w-full"
                 )}
                 onClick={isMobile ? toggleMenu : undefined}
