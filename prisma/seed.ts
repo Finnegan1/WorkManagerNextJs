@@ -83,12 +83,18 @@ async function main() {
           trailsInArea: ['Wanderweg Tharandt-Grillenburg', 'Fahrradweg R4'],
           restrictionLevel: WorkAreaRestrictionLevel.danger,
           restrictedAreas: JSON.stringify({
-            type: 'Polygon',
-            coordinates: [[[13.5, 50.9], [13.52, 50.9], [13.52, 50.91], [13.5, 50.91], [13.5, 50.9]]]
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[[13.5, 50.9], [13.52, 50.9], [13.52, 50.91], [13.5, 50.91], [13.5, 50.9]]]
+            }
           }),
           rerouting: JSON.stringify({
-            type: 'LineString',
-            coordinates: [[13.49, 50.895], [13.53, 50.895], [13.53, 50.915], [13.49, 50.915]]
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [[13.49, 50.895], [13.53, 50.895], [13.53, 50.915], [13.49, 50.915]]
+            }
           }),
           forestryRangeId: forestryRanges.find((forestryRange) => forestryRange.name === 'Dresden')!.id,
           createdById: user.id, // Replace with actual admin user ID
@@ -103,12 +109,18 @@ async function main() {
           trailsInArea: ['Malerweg Etappe 7', 'Forststeig Elbsandstein'],
           restrictionLevel: WorkAreaRestrictionLevel.attention,
           restrictedAreas: JSON.stringify({
-            type: 'Polygon',
-            coordinates: [[[14.2, 50.9], [14.22, 50.9], [14.22, 50.91], [14.2, 50.91], [14.2, 50.9]]]
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[[14.2, 50.9], [14.22, 50.9], [14.22, 50.91], [14.2, 50.91], [14.2, 50.9]]]
+            }
           }),
           rerouting: JSON.stringify({
-            type: 'LineString',
-            coordinates: [[14.19, 50.895], [14.23, 50.895], [14.23, 50.915], [14.19, 50.915]]
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [[14.19, 50.895], [14.23, 50.895], [14.23, 50.915], [14.19, 50.915]]
+            }
           }),
           forestryRangeId: forestryRanges.find((forestryRange) => forestryRange.name === 'Bad Schandau')!.id,
           createdById: user.id, // Replace with actual admin user ID
@@ -123,10 +135,19 @@ async function main() {
           trailsInArea: ['Muldentalradweg'],
           restrictionLevel: WorkAreaRestrictionLevel.none,
           restrictedAreas: JSON.stringify({
-            type: 'Polygon',
-            coordinates: [[[12.8, 51.1], [12.82, 51.1], [12.82, 51.11], [12.8, 51.11], [12.8, 51.1]]]
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[[12.8, 51.1], [12.82, 51.1], [12.82, 51.11], [12.8, 51.11], [12.8, 51.1]]]
+            }
           }),
-          rerouting: JSON.stringify(null),
+          rerouting: JSON.stringify({
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [[12.79, 51.095], [12.83, 51.095], [12.83, 51.115], [12.79, 51.115]]
+            }
+          }),
           forestryRangeId: forestryRanges.find((forestryRange) => forestryRange.name === 'Grimma')!.id,
           createdById: user.id, // Replace with actual admin user ID
         },
