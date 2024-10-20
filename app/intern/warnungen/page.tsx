@@ -10,10 +10,6 @@ const DynamicButton = dynamic(() => import('@/components/ui/button').then(mod =>
     ssr: false
 });
 
-const DynamicInput = dynamic(() => import('@/components/ui/input').then(mod => mod.Input), {
-    ssr: false
-});
-
 const WorkAreasPage = async () => {
     const Map = useMemo(() => dynamic(
         () => import('@/components/maps/AreasOverviewMapIntern'),
