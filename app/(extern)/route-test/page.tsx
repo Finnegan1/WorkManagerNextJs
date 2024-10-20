@@ -59,12 +59,21 @@ export default function RouteChecker() {
                         intersectedAreas.push(area)
                     }
                 } catch (error) {
+                    console.error(error)
                     setError("Fehler beim Überprüfen der Route. Bitte versuchen Sie es erneut.")
                 }
             }
             setAreas(intersectedAreas)
             setIntersectionFound(intersectedAreas.length > 0)
         }
+    }
+
+    const handleChangeTab = (tab: string) => {
+        setActiveTab(tab)
+        setError(null)
+        setAreas([])
+        setIntersectionFound(null)
+        setGeoJson(null)
     }
 
     return (
@@ -79,7 +88,7 @@ export default function RouteChecker() {
                 </Alert>
             )}
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+            <Tabs value={activeTab} onValueChange={handleChangeTab} className="mb-6">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="upload">GPX-Datei hochladen</TabsTrigger>
                     <TabsTrigger value="draw">Route auf der Karte zeichnen</TabsTrigger>
