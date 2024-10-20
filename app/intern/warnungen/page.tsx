@@ -1,10 +1,10 @@
 import { Card } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import prisma from '@/lib/prisma';
 import { tokenDecoded } from '@/lib/utils/auth';
 import Link from 'next/link';
+import AreaTable from "./AreaTable";
 
 const DynamicButton = dynamic(() => import('@/components/ui/button').then(mod => mod.Button), {
     ssr: false
@@ -30,8 +30,6 @@ const WorkAreasPage = async () => {
         }
     });
 
-    console.log(areas)
-
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Verwalte deine Waldarbeiten</h1>
@@ -48,33 +46,7 @@ const WorkAreasPage = async () => {
                     Neue Arbeitsbereich erstellen
                 </DynamicButton>
             </Link>
-
-
-                <>
-                    <DynamicInput placeholder="Type a keyword..." className="mb-4" />
-                    <Table className="min-w-full bg-white">
-                        <TableHeader className="bg-gray-200">
-                            <TableRow>
-                                <TableCell className="px-4 py-2 border">ID</TableCell>
-                                <TableCell className="px-4 py-2 border">Art</TableCell>
-                                <TableCell className="px-4 py-2 border">Zugangsbeschränkung</TableCell>
-                                <TableCell className="px-4 py-2 border">Startzeit</TableCell>
-                                <TableCell className="px-4 py-2 border">Endzeit</TableCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {areas.map((area) => (
-                                <TableRow key={area.id} className="hover:bg-gray-100">
-                                    <TableCell className="px-4 py-2 border">{area.id}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{area.shortDescription}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{area.restrictionLevel}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{new Date(area.startTime).toLocaleString()}</TableCell>
-                                    <TableCell className="px-4 py-2 border">{new Date(area.endTime).toLocaleString()}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </>
+            <AreaTable areas={areas} />
         </div>
     );
 };
