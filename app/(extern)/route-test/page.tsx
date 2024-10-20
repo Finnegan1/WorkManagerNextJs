@@ -5,13 +5,30 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, MapPin, AlertCircle} from 'lucide-react'
+import { Upload, MapPin, AlertCircle } from 'lucide-react'
 import { fetchAreas } from '../public_actions'
 import { Area } from '@prisma/client'
 import dynamic from 'next/dynamic'
-import toGeoJSON from '@mapbox/togeojson'
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { checkTourWithinGeoJson } from '@/lib/mapUtils'
+import turf from '@turf/turf'
+import toGeoJSON from '@mapbox/togeojson'
+
+// Check if the tour intersects or lies within the GeoJSON features
+export function checkTourWithinGeoJson(gpxGeoJson: GeoJSON.FeatureCollection, geoJson: GeoJSON.FeatureCollection): boolean {
+    const gpxLineString = gpxGeoJson.features.find(feature => feature.geometry.type === 'LineString');
+
+    if (!gpxLineString) {
+        throw new Error('No LineString found in GPX data');
+    }
+
+    // Check for intersections or containment
+    return geoJson.features.some(feature => {
+        return (
+            turf.booleanIntersects(gpxLineString as GeoJSON.Feature, feature) ||
+            turf.booleanWithin(gpxLineString as GeoJSON.Feature, feature)
+        );
+    });
+}
 
 export const convertGPXToGeoJSON = (gpxContent: string) => {
     const parser = new DOMParser();
@@ -19,7 +36,7 @@ export const convertGPXToGeoJSON = (gpxContent: string) => {
     const geojson = toGeoJSON.gpx(gpxDom);
     console.log(geojson)
     return geojson;
-  };
+};
 
 const MapComponent = dynamic(() => import('@/components/maps/RouteTestMap'), { ssr: false })
 
@@ -118,22 +135,22 @@ export default function RouteChecker() {
                                 {intersectionFound !== null && (
                                     intersectionFound ? (
                                         <Alert variant="destructive">
-                                        <AlertCircle className="w-4 h-4" />
-                                        <AlertTitle>Überschneidungen gefunden</AlertTitle>
-                                        <AlertDescription>Die Route schneidet sich mit den folgenden Arbeitsbereichen:</AlertDescription>
-                                    </Alert>
-                                ) : (
-                                    <Alert variant="default">
-                                        <AlertCircle className="w-4 h-4" />
-                                        <AlertTitle>Keine Überschneidungen gefunden</AlertTitle>
-                                        <AlertDescription>Die Route schneidet sich mit keinem der Arbeitsbereiche</AlertDescription>
-                                    </Alert>
-                                ))}
+                                            <AlertCircle className="w-4 h-4" />
+                                            <AlertTitle>Überschneidungen gefunden</AlertTitle>
+                                            <AlertDescription>Die Route schneidet sich mit den folgenden Arbeitsbereichen:</AlertDescription>
+                                        </Alert>
+                                    ) : (
+                                        <Alert variant="default">
+                                            <AlertCircle className="w-4 h-4" />
+                                            <AlertTitle>Keine Überschneidungen gefunden</AlertTitle>
+                                            <AlertDescription>Die Route schneidet sich mit keinem der Arbeitsbereiche</AlertDescription>
+                                        </Alert>
+                                    ))}
                                 <MapComponent
                                     geoJson={geoJson}
                                     areas={areas}
                                     isDrawMode={false}
-                                    onDrawCreated={() => {}}
+                                    onDrawCreated={() => { }}
                                 />
                             </CardContent>
                         </Card>
@@ -156,16 +173,16 @@ export default function RouteChecker() {
                                 intersectionFound ? (
                                     <Alert variant="destructive">
                                         <AlertCircle className="w-4 h-4" />
-                                    <AlertTitle>Überschneidungen gefunden</AlertTitle>
-                                    <AlertDescription>Die Route schneidet sich mit den folgenden Arbeitsbereichen:</AlertDescription>
-                                </Alert>
-                            ) : (
-                                <Alert variant="default">
-                                    <AlertCircle className="w-4 h-4" />
-                                    <AlertTitle>Keine Überschneidungen gefunden</AlertTitle>
-                                    <AlertDescription>Die Route schneidet sich mit keinem der Arbeitsbereiche</AlertDescription>
-                                </Alert>
-                            ))}
+                                        <AlertTitle>Überschneidungen gefunden</AlertTitle>
+                                        <AlertDescription>Die Route schneidet sich mit den folgenden Arbeitsbereichen:</AlertDescription>
+                                    </Alert>
+                                ) : (
+                                    <Alert variant="default">
+                                        <AlertCircle className="w-4 h-4" />
+                                        <AlertTitle>Keine Überschneidungen gefunden</AlertTitle>
+                                        <AlertDescription>Die Route schneidet sich mit keinem der Arbeitsbereiche</AlertDescription>
+                                    </Alert>
+                                ))}
                             <MapComponent
                                 geoJson={geoJson}
                                 areas={areas}
