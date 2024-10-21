@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npx prisma migrate reset -f && npx ts-node -P tsconfig-seed.json prisma/seed.ts && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

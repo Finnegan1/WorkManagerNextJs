@@ -13,23 +13,42 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import * as turf from "@turf/turf";
 import toGeoJSON from '@mapbox/togeojson'
 
-// Check if the tour intersects or lies within the GeoJSON features
-export function checkTourWithinGeoJson(gpxGeoJson: GeoJSON.FeatureCollection, geoJson: GeoJSON.FeatureCollection): boolean {
-    const gpxLineString = gpxGeoJson.features.find(feature => feature.geometry.type === 'LineString');
-
+/**
+ * Checks if a tour (represented by a GPX GeoJSON) intersects with any polygon in a given GeoJSON.
+ * 
+ * @param {GeoJSON.FeatureCollection} gpxGeoJson - The GeoJSON representation of the GPX tour.
+ * @param {GeoJSON.FeatureCollection} geoJson - The GeoJSON containing polygons to check against.
+ * @returns {boolean} True if the tour intersects with any polygon, false otherwise.
+ * @throws {Error} If no LineString is found in the GPX data.
+ */
+export function checkTourWithinGeoJson(gpxGeoJson: GeoJSON.FeatureCollection | GeoJSON.Feature , geoJson: GeoJSON.FeatureCollection): boolean {
+    console.log(gpxGeoJson)
+    let gpxLineString: GeoJSON.Feature<GeoJSON.LineString, GeoJSON.GeoJsonProperties> | null = null
+    if (gpxGeoJson.geometry) {
+        gpxLineString = gpxGeoJson as GeoJSON.Feature<GeoJSON.LineString, GeoJSON.GeoJsonProperties>
+    } else if (gpxGeoJson.features) {
+        gpxLineString = gpxGeoJson.features.find(feature => feature.geometry.type === 'LineString') as GeoJSON.Feature<GeoJSON.LineString, GeoJSON.GeoJsonProperties>
+    }
     if (!gpxLineString) {
+        console.error('No LineString found in GPX data');
         throw new Error('No LineString found in GPX data');
     }
 
-    // Check for intersections or containment
     return geoJson.features.some(feature => {
-        return (
-            turf.booleanIntersects(gpxLineString as GeoJSON.Feature, feature) ||
-            turf.booleanWithin(gpxLineString as GeoJSON.Feature, feature)
+        // check for intersection
+        const manualIntersects = gpxLineString.geometry.coordinates.some(coord => 
+            turf.booleanPointInPolygon(coord, feature)
         );
+        return manualIntersects;
     });
 }
 
+/**
+ * Converts GPX content to GeoJSON format.
+ * 
+ * @param {string} gpxContent - The GPX content as a string.
+ * @returns {GeoJSON.FeatureCollection} The converted GeoJSON.
+ */
 export const convertGPXToGeoJSON = (gpxContent: string) => {
     const parser = new DOMParser();
     const gpxDom = parser.parseFromString(gpxContent, 'text/xml');
@@ -64,24 +83,31 @@ export default function RouteChecker() {
     }
 
     const handleCheckRoute = async () => {
-        console.log(geoJson)
         if (geoJson && tourDate) {
-            const response = await fetchAreas(tourDate, tourDate)
-            const intersectedAreas: Area[] = []
-            for (const area of response) {
-                try {
-                    const isTourIntersecting = checkTourWithinGeoJson(geoJson, area.restrictedAreas as any as GeoJSON.FeatureCollection);
-                    console.log(area.shortDescription, isTourIntersecting)
-                    if (isTourIntersecting) {
-                        intersectedAreas.push(area)
-                    }
-                } catch (error) {
-                    console.error(error)
-                    setError("Fehler beim Überprüfen der Route. Bitte versuchen Sie es erneut.")
-                }
+            const response = await fetchAreas(tourDate, tourDate);
+
+            if (response.length === 0) {
+                setIntersectionFound(false);
+                setAreas([]);
+                return;
             }
-            setAreas(intersectedAreas)
-            setIntersectionFound(intersectedAreas.length > 0)
+
+            try {
+                const intersectedAreas: Area[] = response.filter((area) => {
+                    console.log("Checking area:", area.shortDescription);
+                    const areaGeoJson = area.restrictedAreas as any as GeoJSON.FeatureCollection;
+                    const isIntersecting = checkTourWithinGeoJson(geoJson, areaGeoJson);
+                    return isIntersecting;
+                });
+
+                setAreas(intersectedAreas);
+                setIntersectionFound(intersectedAreas.length > 0);
+            } catch (error) {
+                console.error("Error checking route:", error);
+                setError("Fehler beim Überprüfen der Route. Bitte versuchen Sie es erneut.");
+            }
+        } else {
+            console.log("GeoJson or tourDate is missing");
         }
     }
 
