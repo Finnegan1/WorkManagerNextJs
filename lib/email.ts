@@ -1,15 +1,25 @@
+import 'server-only'
+
 import nodemailer, { SentMessageInfo } from 'nodemailer';
 
 export const sendAccountCreatedEmail = async (email: string, password: string): Promise<SentMessageInfo> => {
   try {
     const transporter = nodemailer.createTransport({
+      name: 'workManagerClient',
       service: 'Gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
       },
-      debug: true, // Enable debug output
-      logger: true // Log to console
+      debug: true,
+      logger: true,
+      dnsTimeout: 10000,
+      socketTimeout: 10000,
+      greetingTimeout: 10000,
+      connectionTimeout: 10000,
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587', 10),
+      secure: process.env.SMTP_SECURE === 'true',
     });
 
     const mailOptions = {
@@ -19,11 +29,10 @@ export const sendAccountCreatedEmail = async (email: string, password: string): 
       text: `Your new account is created.\n\nYour password is: ${password}\nPlease change your password after logging in as soon as possible.`
     };
 
-    console.log('Attempting to send email...');
     const result = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', result);
-    return result;
-  } catch (error) {
+    console.log(result)
+    return result
+  } catch (error: any) {
     console.error('Error sending email:', error);
     throw error;
   }
