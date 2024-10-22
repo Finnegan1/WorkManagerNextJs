@@ -25,9 +25,11 @@ const ClientComponent = (
     const [email, setEmail] = useState('')
     const [role, setRole] = useState('USER')
     const [users, setUsers] = useState(initialUsers)
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        setIsLoading(true)
         console.log(email, role)
         const formData = new FormData(e.currentTarget)
         const response = await CreateUser(formData)
@@ -35,11 +37,14 @@ const ClientComponent = (
         if (response) {
             setUsers([...users, response])
         }
+        setIsLoading(false)
     }
 
     const handleDeleteUser = async (id: string) => {
+        setIsLoading(true)
         await DeleteUser(id)
         setUsers(users.filter(user => user.id !== id))
+        setIsLoading(false)
     }
 
     return (
@@ -73,8 +78,14 @@ const ClientComponent = (
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button type="submit" className="w-full">
-                            <PlusIcon className="mr-2 h-4 w-4" /> Benutzer hinzufügen
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? (
+                                <>Lädt...</>
+                            ) : (
+                                <>
+                                    <PlusIcon className="mr-2 h-4 w-4" /> Benutzer hinzufügen
+                                </>
+                            )}
                         </Button>
                     </form>
                 </Suspense>
@@ -98,8 +109,13 @@ const ClientComponent = (
                                     <TableCell>{user.role}</TableCell>
                                     <TableCell>{format(new Date(user.createdAt), 'dd.MM.yyyy')}</TableCell>
                                     <TableCell>
-                                        <Button variant="destructive" size="sm" onClick={() => handleDeleteUser(user.id)}>
-                                            <TrashIcon className="h-4 w-4" />
+                                        <Button 
+                                            variant="destructive" 
+                                            size="sm" 
+                                            onClick={() => handleDeleteUser(user.id)}
+                                            disabled={isLoading}
+                                        >
+                                            {isLoading ? 'Lädt...' : <TrashIcon className="h-4 w-4" />}
                                         </Button>
                                     </TableCell>
                                 </TableRow>
