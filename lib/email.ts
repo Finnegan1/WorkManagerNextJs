@@ -18,7 +18,7 @@ export const sendAccountCreatedEmail = async (email: string, password: string): 
       greetingTimeout: 10000,
       connectionTimeout: 10000,
       //host: process.env.SMTP_HOST,
-      //port: parseInt(process.env.SMTP_PORT || '587', 10),
+      port: 587,
       //secure: process.env.SMTP_SECURE === 'true',
     });
 
