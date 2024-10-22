@@ -8,6 +8,7 @@ import { PDFDocument } from 'pdf-lib'
 import type { FeatureCollection } from 'geojson';
 import { formatDate } from '@/lib/utils/dateUtils';
 import Handlebars from 'handlebars';
+import prisma from "@/lib/prisma";
 
 export async function sendPDFByEmail(email: string, selectedAreaIds: number[]) {
   console.log('Sending PDF to email:', email, selectedAreaIds)
@@ -112,6 +113,12 @@ async function generatePdfPage(area: Area, template: string) {
 
   const image = await generateAreaImage(area);
 
+  const forestryRange = await prisma.forestryRange.findUnique({
+    where: {
+      id: area.forestryRangeId
+    }
+  })
+
   const templateHandlebars = Handlebars.compile(templateSource);
   const html = templateHandlebars({
     currentDate: formatDate(new Date()),
@@ -120,7 +127,8 @@ async function generatePdfPage(area: Area, template: string) {
     image: image,
     description: area.information || '',
     workDescription: area.workDescription,
-    forstrevier: area.forestryRangeId || '',
+    forestryRangeNumber: forestryRange?.number || '',
+    forestryRangeName: forestryRange?.name || '',
     information: area.information || '',
     forestSection: area.forestSection || '',
     trailsInArea: area.trailsInArea || []
